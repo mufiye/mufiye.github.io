@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            nfs源代码解析0——输出统计信息 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">nfs源代码解析0——输出统计信息</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-06-14 22:33:53</span>
+        <span class="mobile">2022-06-14 22:33</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">文件系统</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">源码解析</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/nfs/">nfs</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/procfs/">procfs</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF/">统计信息</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>692 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>3 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="1-Client"><a href="#1-Client" class="headerlink" title="1. Client"></a>1. Client</h1><h2 id="1-1-读取-x2F-proc-x2F-net-x2F-rpc-x2F-nfs"><a href="#1-1-读取-x2F-proc-x2F-net-x2F-rpc-x2F-nfs" class="headerlink" title="1.1 读取&#x2F;proc&#x2F;net&#x2F;rpc&#x2F;nfs"></a>1.1 读取&#x2F;proc&#x2F;net&#x2F;rpc&#x2F;nfs</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">read</span><br><span class="line">  ksys_read</span><br><span class="line">    vfs_read</span><br><span class="line">      proc_reg_read</span><br><span class="line">        pde_read</span><br><span class="line">          seq_read</span><br><span class="line">            seq_read_iter</span><br><span class="line">              rpc_proc_show</span><br></pre></td></tr></table></figure>
+<h2 id="1-2-客户端方法的枚举："><a href="#1-2-客户端方法的枚举：" class="headerlink" title="1.2 客户端方法的枚举："></a>1.2 客户端方法的枚举：</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* in include/linux/nfs4.h */</span></span><br><span class="line"><span class="class"><span class="keyword">enum</span> &#123;</span></span><br><span class="line">	NFSPROC4_CLNT_NULL = <span class="number">0</span>,		<span class="comment">/* Unused */</span></span><br><span class="line">	NFSPROC4_CLNT_READ,</span><br><span class="line">	NFSPROC4_CLNT_WRITE,</span><br><span class="line">	NFSPROC4_CLNT_COMMIT,</span><br><span class="line">	NFSPROC4_CLNT_OPEN,</span><br><span class="line">	NFSPROC4_CLNT_OPEN_CONFIRM,</span><br><span class="line">	NFSPROC4_CLNT_OPEN_NOATTR,</span><br><span class="line">	NFSPROC4_CLNT_OPEN_DOWNGRADE,</span><br><span class="line">	NFSPROC4_CLNT_CLOSE,</span><br><span class="line">	NFSPROC4_CLNT_SETATTR,</span><br><span class="line">	NFSPROC4_CLNT_FSINFO,</span><br><span class="line">	NFSPROC4_CLNT_RENEW,</span><br><span class="line">	NFSPROC4_CLNT_SETCLIENTID,</span><br><span class="line">	NFSPROC4_CLNT_SETCLIENTID_CONFIRM,</span><br><span class="line">	NFSPROC4_CLNT_LOCK,</span><br><span class="line">	NFSPROC4_CLNT_LOCKT,</span><br><span class="line">	NFSPROC4_CLNT_LOCKU,</span><br><span class="line">	NFSPROC4_CLNT_ACCESS,</span><br><span class="line">	NFSPROC4_CLNT_GETATTR,</span><br><span class="line">	NFSPROC4_CLNT_LOOKUP,</span><br><span class="line">	NFSPROC4_CLNT_LOOKUP_ROOT,</span><br><span class="line">	NFSPROC4_CLNT_REMOVE,</span><br><span class="line">	NFSPROC4_CLNT_RENAME,</span><br><span class="line">	NFSPROC4_CLNT_LINK,</span><br><span class="line">	NFSPROC4_CLNT_SYMLINK,</span><br><span class="line">	NFSPROC4_CLNT_CREATE,</span><br><span class="line">	NFSPROC4_CLNT_PATHCONF,</span><br><span class="line">	NFSPROC4_CLNT_STATFS,</span><br><span class="line">	NFSPROC4_CLNT_READLINK,</span><br><span class="line">	NFSPROC4_CLNT_READDIR,</span><br><span class="line">	NFSPROC4_CLNT_SERVER_CAPS,</span><br><span class="line">	NFSPROC4_CLNT_DELEGRETURN,</span><br><span class="line">	NFSPROC4_CLNT_GETACL,</span><br><span class="line">	NFSPROC4_CLNT_SETACL,</span><br><span class="line">	NFSPROC4_CLNT_FS_LOCATIONS,</span><br><span class="line">	NFSPROC4_CLNT_RELEASE_LOCKOWNER,</span><br><span class="line">	NFSPROC4_CLNT_SECINFO,</span><br><span class="line">	NFSPROC4_CLNT_FSID_PRESENT,</span><br><span class="line"></span><br><span class="line">	NFSPROC4_CLNT_EXCHANGE_ID,</span><br><span class="line">	NFSPROC4_CLNT_CREATE_SESSION,</span><br><span class="line">	NFSPROC4_CLNT_DESTROY_SESSION,</span><br><span class="line">	NFSPROC4_CLNT_SEQUENCE,</span><br><span class="line">	NFSPROC4_CLNT_GET_LEASE_TIME,</span><br><span class="line">	NFSPROC4_CLNT_RECLAIM_COMPLETE,</span><br><span class="line">	NFSPROC4_CLNT_LAYOUTGET,</span><br><span class="line">	NFSPROC4_CLNT_GETDEVICEINFO,</span><br><span class="line">	NFSPROC4_CLNT_LAYOUTCOMMIT,</span><br><span class="line">	NFSPROC4_CLNT_LAYOUTRETURN,</span><br><span class="line">	NFSPROC4_CLNT_SECINFO_NO_NAME,</span><br><span class="line">	NFSPROC4_CLNT_TEST_STATEID,</span><br><span class="line">	NFSPROC4_CLNT_FREE_STATEID,</span><br><span class="line">	NFSPROC4_CLNT_GETDEVICELIST,</span><br><span class="line">	NFSPROC4_CLNT_BIND_CONN_TO_SESSION,</span><br><span class="line">	NFSPROC4_CLNT_DESTROY_CLIENTID,</span><br><span class="line"></span><br><span class="line">	NFSPROC4_CLNT_SEEK,</span><br><span class="line">	NFSPROC4_CLNT_ALLOCATE,</span><br><span class="line">	NFSPROC4_CLNT_DEALLOCATE,</span><br><span class="line">	NFSPROC4_CLNT_LAYOUTSTATS,</span><br><span class="line">	NFSPROC4_CLNT_CLONE,</span><br><span class="line">	NFSPROC4_CLNT_COPY,</span><br><span class="line">	NFSPROC4_CLNT_OFFLOAD_CANCEL,</span><br><span class="line"></span><br><span class="line">	NFSPROC4_CLNT_LOOKUPP,</span><br><span class="line">	NFSPROC4_CLNT_LAYOUTERROR,</span><br><span class="line">	NFSPROC4_CLNT_COPY_NOTIFY,</span><br><span class="line"></span><br><span class="line">	NFSPROC4_CLNT_GETXATTR,</span><br><span class="line">	NFSPROC4_CLNT_SETXATTR,</span><br><span class="line">	NFSPROC4_CLNT_LISTXATTRS,</span><br><span class="line">	NFSPROC4_CLNT_REMOVEXATTR,</span><br><span class="line">	NFSPROC4_CLNT_READ_PLUS,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-3-客户端改变方法计数"><a href="#1-3-客户端改变方法计数" class="headerlink" title="1.3 客户端改变方法计数"></a>1.3 客户端改变方法计数</h2><p><strong>待仔细研究call_start函数！！！</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__rpc_execute</span><br><span class="line">  call_start</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpc_clnt</span>	*<span class="title">clnt</span> =</span> task-&gt;tk_client;</span><br><span class="line">	<span class="type">int</span> idx = task-&gt;tk_msg.rpc_proc-&gt;p_statidx;</span><br><span class="line">	...</span><br><span class="line">    clnt-&gt;cl_program-&gt;version[clnt-&gt;cl_vers]-&gt;counts[idx]++;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpc_task</span> &#123;</span></span><br><span class="line">	...</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_message</span>	<span class="title">tk_msg</span>;</span>		<span class="comment">/* RPC call info */</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpc_message</span> &#123;</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_procinfo</span> *<span class="title">rpc_proc</span>;</span>	<span class="comment">/* Procedure information */</span></span><br><span class="line">	...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpc_procinfo</span> &#123;</span></span><br><span class="line">	...</span><br><span class="line">	u32			p_statidx;	<span class="comment">/* Which procedure to account */</span></span><br><span class="line">	...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>有对应的函数会在运行的过程中对对应属性赋值（以read举例）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_procinfo</span> <span class="title">nfs4_procedures</span>[] =</span> &#123;</span><br><span class="line">	PROC(READ,		enc_read,		dec_read),</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">read</span><br><span class="line">  ksys_read</span><br><span class="line">    vfs_read</span><br><span class="line">      new_sync_read</span><br><span class="line">        call_read_iter <span class="comment">/* file-&gt;f_op-&gt;read_iter */</span></span><br><span class="line">          nfs_file_read <span class="comment">/* 读取nfs file */</span></span><br><span class="line">            generic_file_read_iter</span><br><span class="line">              filemap_read <span class="comment">/* Read data from the page cache. */</span></span><br><span class="line">                filemap_get_pages</span><br><span class="line">                  page_cache_sync_readahead <span class="comment">/* generic file readahead */</span></span><br><span class="line">                    page_cache_sync_ra</span><br><span class="line">                      ondemand_readahead</span><br><span class="line">                        page_cache_ra_order</span><br><span class="line">                          do_page_cache_ra</span><br><span class="line">                            page_cache_ra_unbounded</span><br><span class="line">                              read_pages</span><br><span class="line">                                nfs_readahead  <span class="comment">/* 页高速缓存读 */</span></span><br><span class="line">    							readahead_page <span class="comment">/* Get the next page to read. */</span></span><br><span class="line">    							readpage_async_filler <span class="comment">/* 填充读取page的request */</span></span><br><span class="line">                                  nfs_pageio_complete_read </span><br><span class="line">                                    nfs_pageio_complete</span><br><span class="line">                                      nfs_pageio_complete_mirror</span><br><span class="line">                                        nfs_pageio_doio</span><br><span class="line">                                          nfs_generic_pg_pgios </span><br><span class="line">                                            nfs_initiate_pgio</span><br><span class="line">                                              rpc_run_task</span><br><span class="line">                                                rpc_execute</span><br></pre></td></tr></table></figure>
+
+<p><em><strong>补充：操作计数统计</strong></em></p>
+<p><strong>read：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nfs_initiate_pgio  <span class="comment">/* hdr-&gt;rw_ops-&gt;rw_initiate(...); */</span></span><br><span class="line">  nfs_initiate_read  <span class="comment">/* rpc_ops-&gt;read_setup(hdr, msg); */</span></span><br><span class="line">    nfs4_proc_read_setup   <span class="comment">/* msg-&gt;rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_READ]; */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>write：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nfs_initiate_pgio  <span class="comment">/* hdr-&gt;rw_ops-&gt;rw_initiate(...); */</span></span><br><span class="line">  nfs_initiate_write  <span class="comment">/* rpc_ops-&gt;write_setup(hdr, msg, &amp;task_setup_data-&gt;rpc_client); */</span></span><br><span class="line">    nfs4_proc_write_setup  <span class="comment">/* msg-&gt;rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_WRITE]; */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>open：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nfs4_run_open_task  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_OPEN], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Access：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_proc_access  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_ACCESS], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>GetAttr：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_proc_getattr  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_GETATTR], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Close：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nfs4_do_close  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_CLOSE], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Sequence：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs41_proc_sequence  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_SEQUENCE], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Delegation：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_proc_delegreturn  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_DELEGRETURN], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Create Session：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_proc_create_session <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_CREATE_SESSION] */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>DESTROY_SESSION：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nfs4_proc_destroy_session <span class="comment">/* ... = &amp;nfs4_procedures[NFSPROC4_CLNT_DESTROY_SESSION], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>EXCHANGE_ID：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nfs4_run_exchange_id  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_EXCHANGE_ID], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>DESTROY_CLIENTID：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_proc_destroy_clientid <span class="comment">/* ... = &amp;nfs4_procedures[NFSPROC4_CLNT_DESTROY_CLIENTID], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Reclaim Complete：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nfs41_proc_reclaim_complete <span class="comment">/* ... = nfs4_procedures[NFSPROC4_CLNT_RECLAIM_COMPLETE], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>SECINFO_NO_NAME：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs41_proc_secinfo_no_name  <span class="comment">/* ... = &amp;nfs4_procedures[NFSPROC4_CLNT_SECINFO_NO_NAME] */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>LOOKUP_ROOT：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_lookup_root  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_LOOKUP_ROOT], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>SERVER_CAPS：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_server_capabilities  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_SERVER_CAPS], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>FSINFO：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_do_fsinfo  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_FSINFO], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>PATHCONF：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_proc_pathconf  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_PATHCONF], */</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>LOOKUP：</strong>（?）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_nfs4_proc_lookup  <span class="comment">/* .rpc_proc = &amp;nfs4_procedures[NFSPROC4_CLNT_LOOKUP], */</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="2-Server"><a href="#2-Server" class="headerlink" title="2. Server"></a>2. Server</h1><h2 id="2-1-读取-x2F-proc-x2F-net-x2F-rpc-x2F-nfsd"><a href="#2-1-读取-x2F-proc-x2F-net-x2F-rpc-x2F-nfsd" class="headerlink" title="2.1 读取&#x2F;proc&#x2F;net&#x2F;rpc&#x2F;nfsd"></a>2.1 读取&#x2F;proc&#x2F;net&#x2F;rpc&#x2F;nfsd</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">read</span><br><span class="line">  ksys_read</span><br><span class="line">    vfs_read</span><br><span class="line">      proc_reg_read</span><br><span class="line">        pde_read</span><br><span class="line">          seq_read</span><br><span class="line">            seq_read_iter</span><br><span class="line">              nfsd_proc_show</span><br></pre></td></tr></table></figure>
+<h2 id="2-2-服务器端方法的枚举："><a href="#2-2-服务器端方法的枚举：" class="headerlink" title="2.2 服务器端方法的枚举："></a>2.2 服务器端方法的枚举：</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* in include/linux/nfs4.h */</span></span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">nfs_opnum4</span> &#123;</span></span><br><span class="line">	OP_ACCESS = <span class="number">3</span>,</span><br><span class="line">	OP_CLOSE = <span class="number">4</span>,</span><br><span class="line">	OP_COMMIT = <span class="number">5</span>,</span><br><span class="line">	OP_CREATE = <span class="number">6</span>,</span><br><span class="line">	OP_DELEGPURGE = <span class="number">7</span>,</span><br><span class="line">	OP_DELEGRETURN = <span class="number">8</span>,</span><br><span class="line">	OP_GETATTR = <span class="number">9</span>,</span><br><span class="line">	OP_GETFH = <span class="number">10</span>,</span><br><span class="line">	OP_LINK = <span class="number">11</span>,</span><br><span class="line">	OP_LOCK = <span class="number">12</span>,</span><br><span class="line">	OP_LOCKT = <span class="number">13</span>,</span><br><span class="line">	OP_LOCKU = <span class="number">14</span>,</span><br><span class="line">	OP_LOOKUP = <span class="number">15</span>,</span><br><span class="line">	OP_LOOKUPP = <span class="number">16</span>,</span><br><span class="line">	OP_NVERIFY = <span class="number">17</span>,</span><br><span class="line">	OP_OPEN = <span class="number">18</span>,</span><br><span class="line">	OP_OPENATTR = <span class="number">19</span>,</span><br><span class="line">	OP_OPEN_CONFIRM = <span class="number">20</span>,</span><br><span class="line">	OP_OPEN_DOWNGRADE = <span class="number">21</span>,</span><br><span class="line">	OP_PUTFH = <span class="number">22</span>,</span><br><span class="line">	OP_PUTPUBFH = <span class="number">23</span>,</span><br><span class="line">	OP_PUTROOTFH = <span class="number">24</span>,</span><br><span class="line">	OP_READ = <span class="number">25</span>,</span><br><span class="line">	OP_READDIR = <span class="number">26</span>,</span><br><span class="line">	OP_READLINK = <span class="number">27</span>,</span><br><span class="line">	OP_REMOVE = <span class="number">28</span>,</span><br><span class="line">	OP_RENAME = <span class="number">29</span>,</span><br><span class="line">	OP_RENEW = <span class="number">30</span>,</span><br><span class="line">	OP_RESTOREFH = <span class="number">31</span>,</span><br><span class="line">	OP_SAVEFH = <span class="number">32</span>,</span><br><span class="line">	OP_SECINFO = <span class="number">33</span>,</span><br><span class="line">	OP_SETATTR = <span class="number">34</span>,</span><br><span class="line">	OP_SETCLIENTID = <span class="number">35</span>,</span><br><span class="line">	OP_SETCLIENTID_CONFIRM = <span class="number">36</span>,</span><br><span class="line">	OP_VERIFY = <span class="number">37</span>,</span><br><span class="line">	OP_WRITE = <span class="number">38</span>,</span><br><span class="line">	OP_RELEASE_LOCKOWNER = <span class="number">39</span>,</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* nfs41 */</span></span><br><span class="line">	OP_BACKCHANNEL_CTL = <span class="number">40</span>,</span><br><span class="line">	OP_BIND_CONN_TO_SESSION = <span class="number">41</span>,</span><br><span class="line">	OP_EXCHANGE_ID = <span class="number">42</span>,</span><br><span class="line">	OP_CREATE_SESSION = <span class="number">43</span>,</span><br><span class="line">	OP_DESTROY_SESSION = <span class="number">44</span>,</span><br><span class="line">	OP_FREE_STATEID = <span class="number">45</span>,</span><br><span class="line">	OP_GET_DIR_DELEGATION = <span class="number">46</span>,</span><br><span class="line">	OP_GETDEVICEINFO = <span class="number">47</span>,</span><br><span class="line">	OP_GETDEVICELIST = <span class="number">48</span>,</span><br><span class="line">	OP_LAYOUTCOMMIT = <span class="number">49</span>,</span><br><span class="line">	OP_LAYOUTGET = <span class="number">50</span>,</span><br><span class="line">	OP_LAYOUTRETURN = <span class="number">51</span>,</span><br><span class="line">	OP_SECINFO_NO_NAME = <span class="number">52</span>,</span><br><span class="line">	OP_SEQUENCE = <span class="number">53</span>,</span><br><span class="line">	OP_SET_SSV = <span class="number">54</span>,</span><br><span class="line">	OP_TEST_STATEID = <span class="number">55</span>,</span><br><span class="line">	OP_WANT_DELEGATION = <span class="number">56</span>,</span><br><span class="line">	OP_DESTROY_CLIENTID = <span class="number">57</span>,</span><br><span class="line">	OP_RECLAIM_COMPLETE = <span class="number">58</span>,</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* nfs42 */</span></span><br><span class="line">	OP_ALLOCATE = <span class="number">59</span>,</span><br><span class="line">	OP_COPY = <span class="number">60</span>,</span><br><span class="line">	OP_COPY_NOTIFY = <span class="number">61</span>,</span><br><span class="line">	OP_DEALLOCATE = <span class="number">62</span>,</span><br><span class="line">	OP_IO_ADVISE = <span class="number">63</span>,</span><br><span class="line">	OP_LAYOUTERROR = <span class="number">64</span>,</span><br><span class="line">	OP_LAYOUTSTATS = <span class="number">65</span>,</span><br><span class="line">	OP_OFFLOAD_CANCEL = <span class="number">66</span>,</span><br><span class="line">	OP_OFFLOAD_STATUS = <span class="number">67</span>,</span><br><span class="line">	OP_READ_PLUS = <span class="number">68</span>,</span><br><span class="line">	OP_SEEK = <span class="number">69</span>,</span><br><span class="line">	OP_WRITE_SAME = <span class="number">70</span>,</span><br><span class="line">	OP_CLONE = <span class="number">71</span>,</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* xattr support (RFC8726) */</span></span><br><span class="line">	OP_GETXATTR                = <span class="number">72</span>,</span><br><span class="line">	OP_SETXATTR                = <span class="number">73</span>,</span><br><span class="line">	OP_LISTXATTRS              = <span class="number">74</span>,</span><br><span class="line">	OP_REMOVEXATTR             = <span class="number">75</span>,</span><br><span class="line"></span><br><span class="line">	OP_ILLEGAL = <span class="number">10044</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-服务器端改变方法计数"><a href="#2-3-服务器端改变方法计数" class="headerlink" title="2.3 服务器端改变方法计数"></a>2.3 服务器端改变方法计数</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kthread</span><br><span class="line">  nfsd</span><br><span class="line">    svc_process</span><br><span class="line">      svc_process_common</span><br><span class="line">        nfsd_dispatch</span><br><span class="line">          nfsd4_proc_compound  <span class="comment">/* 处理复合请求（多种请求混合） */</span></span><br><span class="line">            nfsd4_increment_op_stats</span><br></pre></td></tr></table></figure>
+
+<p>每一个循环处理一个操作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (!status &amp;&amp; resp-&gt;opcnt &lt; args-&gt;opcnt) &#123;</span><br><span class="line">	op = &amp;args-&gt;ops[resp-&gt;opcnt++];</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：nfs源代码解析0——输出统计信息</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2022-06-14 22:33:53</li>
+        <li>
+            本文链接：http://mufiye.github.io/2022/06/14/nfs源代码解析0——输出统计信息/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">#文件系统</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">#源码解析</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/nfs/">#nfs</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/procfs/">#procfs</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF/">#统计信息</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/06/15/nfs%E6%BA%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%901%E2%80%94%E2%80%94read/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">nfs源代码解析1——read</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/06/03/MIT6-824%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94Introduction/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">MIT6.824笔记1——Introduction</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Client"><span class="nav-text">1. Client</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E8%AF%BB%E5%8F%96-x2F-proc-x2F-net-x2F-rpc-x2F-nfs"><span class="nav-text">1.1 读取&#x2F;proc&#x2F;net&#x2F;rpc&#x2F;nfs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%96%B9%E6%B3%95%E7%9A%84%E6%9E%9A%E4%B8%BE%EF%BC%9A"><span class="nav-text">1.2 客户端方法的枚举：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%94%B9%E5%8F%98%E6%96%B9%E6%B3%95%E8%AE%A1%E6%95%B0"><span class="nav-text">1.3 客户端改变方法计数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Server"><span class="nav-text">2. Server</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E8%AF%BB%E5%8F%96-x2F-proc-x2F-net-x2F-rpc-x2F-nfsd"><span class="nav-text">2.1 读取&#x2F;proc&#x2F;net&#x2F;rpc&#x2F;nfsd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E6%96%B9%E6%B3%95%E7%9A%84%E6%9E%9A%E4%B8%BE%EF%BC%9A"><span class="nav-text">2.2 服务器端方法的枚举：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E6%94%B9%E5%8F%98%E6%96%B9%E6%B3%95%E8%AE%A1%E6%95%B0"><span class="nav-text">2.3 服务器端改变方法计数</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

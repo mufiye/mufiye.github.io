@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            nfs源代码解析1——read |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">nfs源代码解析1——read</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-06-15 14:07:16</span>
+        <span class="mobile">2022-06-15 14:07</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">文件系统</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">源码解析</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/nfs/">nfs</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/read/">read</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>4 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="1-读取成功"><a href="#1-读取成功" class="headerlink" title="1. 读取成功"></a>1. 读取成功</h1><h2 id="1-1-Client"><a href="#1-1-Client" class="headerlink" title="1.1 Client"></a>1.1 Client</h2><p>nfs v4</p>
+<p>generic_file_read_iter有两种读的方式，分为直接IO与缓存IO，IO类型由读取的file类型决定（include&#x2F;linux&#x2F;fs.h的init_sync_kiocb函数中）。</p>
+<p>总的来说就是客户端发起读系统调用，之后根据是否有缓存的情况发起读rpc请求。</p>
+<p><strong>Q0：读操作应该存在某种缓存机制?</strong></p>
+<p><strong>A0：是的，缓存IO。</strong></p>
+<p><strong>重点研究nfs_file_read函数以及一系列文件系统通用的IO流程</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">read</span><br><span class="line">  ksys_read</span><br><span class="line">    vfs_read</span><br><span class="line">      new_sync_read</span><br><span class="line">        call_read_iter <span class="comment">/* file-&gt;f_op-&gt;read_iter */</span></span><br><span class="line">          nfs_file_read <span class="comment">/* 读取nfs file */</span></span><br><span class="line">            generic_file_read_iter <span class="comment">/* 用于更新缓存数据 */</span></span><br><span class="line">              filemap_read <span class="comment">/* Read data from the page cache. */</span></span><br><span class="line">                filemap_get_pages</span><br><span class="line">                  page_cache_sync_readahead <span class="comment">/* generic file readahead */</span></span><br><span class="line">                    page_cache_sync_ra</span><br><span class="line">                      ondemand_readahead</span><br><span class="line">                        page_cache_ra_order</span><br><span class="line">                          do_page_cache_ra</span><br><span class="line">                            page_cache_ra_unbounded</span><br><span class="line">                              read_pages</span><br><span class="line">                                nfs_readahead  <span class="comment">/* 页高速缓存读 */</span></span><br><span class="line">                                  nfs_pageio_init_read</span><br><span class="line">                                    nfs_pageio_init <span class="comment">/* 初始化rw_ops为nfs_rw_read_ops */</span></span><br><span class="line">    							  readahead_page <span class="comment">/* Get the next page to read. */</span></span><br><span class="line">    							  readpage_async_filler <span class="comment">/* 创建读取page的请求 */</span></span><br><span class="line">                                  nfs_pageio_complete_read </span><br><span class="line">                                    nfs_pageio_complete</span><br><span class="line">                                      nfs_pageio_complete_mirror</span><br><span class="line">                                        nfs_pageio_doio</span><br><span class="line">                                          nfs_generic_pg_pgios </span><br><span class="line">                                            nfs_initiate_pgio  <span class="comment">/* 填充rpc_task_setup，启动rpc task */</span></span><br><span class="line">                                              rpc_run_task</span><br><span class="line">                                                rpc_execute</span><br></pre></td></tr></table></figure>
+
+<h3 id="重点结构体"><a href="#重点结构体" class="headerlink" title="重点结构体"></a>重点结构体</h3><h4 id="1）nfs-readdesc"><a href="#1）nfs-readdesc" class="headerlink" title="1）nfs_readdesc"></a>1）nfs_readdesc</h4><p>nfs读操作的描述符</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nfs_readdesc</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_pageio_descriptor</span> <span class="title">pgio</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_open_context</span> *<span class="title">ctx</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2）nfs-pageio-descriptor"><a href="#2）nfs-pageio-descriptor" class="headerlink" title="2）nfs_pageio_descriptor"></a>2）nfs_pageio_descriptor</h4><p>nfs_pageio_descriptor这个结构体中包含了nfs缓存页的inode信息，向服务器发起IO请求的函数以及一些控制信息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nfs_pageio_descriptor</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span>		*<span class="title">pg_inode</span>;</span>  <span class="comment">/* page对应的inode组成的链表？ */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">nfs_pageio_ops</span> *<span class="title">pg_ops</span>;</span> <span class="comment">/* nfs page相关的操作 */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">nfs_rw_ops</span> *<span class="title">pg_rw_ops</span>;</span> <span class="comment">/* nfs读写页操作 */</span></span><br><span class="line">	</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_call_ops</span> *<span class="title">pg_rpc_callops</span>;</span> <span class="comment">/* rpc请求相关的函数 */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">nfs_pgio_completion_ops</span> *<span class="title">pg_completion_ops</span>;</span> <span class="comment">/* 当读写结束或者出错后调用这里的函数 */</span></span><br><span class="line">	</span><br><span class="line">    ...</span><br><span class="line">        </span><br><span class="line">	u32			pg_mirror_count;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_pgio_mirror</span>	*<span class="title">pg_mirrors</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_pgio_mirror</span>	 <span class="title">pg_mirrors_static</span>[1];</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_pgio_mirror</span>	*<span class="title">pg_mirrors_dynamic</span>;</span></span><br><span class="line">	u32			pg_mirror_idx;	<span class="comment">/* current mirror */</span></span><br><span class="line">    </span><br><span class="line">	...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3）nfs-page"><a href="#3）nfs-page" class="headerlink" title="3）nfs_page"></a>3）nfs_page</h4><p>nfs_page是nfs的page结构，每个nfs_page关联一个缓存页。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nfs_page</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">wb_list</span>;</span>	<span class="comment">/* Defines state of page: */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span>		*<span class="title">wb_page</span>;</span>	   <span class="comment">/* page to read in/write out */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_lock_context</span>	*<span class="title">wb_lock_context</span>;</span>	<span class="comment">/* lock context info */</span></span><br><span class="line">	<span class="type">pgoff_t</span>			wb_index;	<span class="comment">/* Offset &gt;&gt; PAGE_SHIFT */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		wb_offset,	<span class="comment">/* Offset &amp; ~PAGE_MASK */</span></span><br><span class="line">				wb_pgbase,	<span class="comment">/* Start of page data */</span></span><br><span class="line">				wb_bytes;	<span class="comment">/* Length of request */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kref</span>		<span class="title">wb_kref</span>;</span>	<span class="comment">/* reference count */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		wb_flags;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_write_verifier</span>	<span class="title">wb_verf</span>;</span>	<span class="comment">/* Commit cookie */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_page</span>		*<span class="title">wb_this_page</span>;</span>  <span class="comment">/* list of reqs for this page */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_page</span>		*<span class="title">wb_head</span>;</span>       <span class="comment">/* head pointer for req list */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span>		wb_nio;		<span class="comment">/* Number of I/O attempts */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4）nfs-pgio-header"><a href="#4）nfs-pgio-header" class="headerlink" title="4）nfs_pgio_header"></a>4）nfs_pgio_header</h4><p>nfs_pageio_descriptor可以组合在一起作为一条报文，nfs_pgio_header是该报文的头部信息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nfs_pgio_header</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span>		*<span class="title">inode</span>;</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span>		*<span class="title">cred</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">pages</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_page</span>		*<span class="title">req</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_writeverf</span>	<span class="title">verf</span>;</span>		<span class="comment">/* Used for writes */</span></span><br><span class="line">	<span class="type">fmode_t</span>			rw_mode;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">pnfs_layout_segment</span> *<span class="title">lseg</span>;</span></span><br><span class="line">	<span class="type">loff_t</span>			io_start;</span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_call_ops</span> *<span class="title">mds_ops</span>;</span></span><br><span class="line">	<span class="type">void</span> (*release) (<span class="keyword">struct</span> nfs_pgio_header *hdr);</span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">nfs_pgio_completion_ops</span> *<span class="title">completion_ops</span>;</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">nfs_rw_ops</span>	*<span class="title">rw_ops</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_io_completion</span> *<span class="title">io_completion</span>;</span></span><br><span class="line">	</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * rpc data</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_task</span>		<span class="title">task</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_fattr</span>	<span class="title">fattr</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_pgio_args</span>	<span class="title">args</span>;</span>		<span class="comment">/* argument struct */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_pgio_res</span>	<span class="title">res</span>;</span>		<span class="comment">/* result struct */</span></span><br><span class="line">    </span><br><span class="line">	...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="nfs-file-read"><a href="#nfs-file-read" class="headerlink" title="nfs_file_read"></a>nfs_file_read</h3><p>使用直接IO或者缓存IO读取数据，如果使用缓存的方式，nfs_revalidate_mapping函数检查了本地缓存的文件属性，如果文件属性无效了就向服务器发起GETATTR请求以此更新本地缓存的文件属性。之后读取数据时如果缓存中的数据有效，就使用该数据；如果缓存数据失效则调用generic_file_read_iter更新缓存数据。</p>
+<h3 id="nfs-readahead"><a href="#nfs-readahead" class="headerlink" title="nfs_readahead"></a>nfs_readahead</h3><p>nfs_find_open_context函数和get_nfs_open_context函数获取上下文信息，这主要涉及同步互斥以及访问权限？。nfs_pageio_init_read初始化了一个nfs_pageio_descriptor结构。之后循环体使用readahead_page函数获取需要读取的页，readpage_async_filler函数负责创建读请求，将读请求添加到队列中，其会为缓存页创建一个nfs_page结构。nfs_pageio_complete_read函数负责发起读请求。</p>
+<h3 id="readpage-async-filler"><a href="#readpage-async-filler" class="headerlink" title="readpage_async_filler"></a>readpage_async_filler</h3><p>首先检查fs cache中的数据是否有效，如果有效就用fs cache中的数据填充缓存页，而不必创建read请求了；如果无效则创建请求并将请求添加到nfs_pageio_descriptor中。</p>
+<h3 id="Questions"><a href="#Questions" class="headerlink" title="Questions"></a>Questions</h3><ul>
+<li><p><em>Q1：<strong>trace</strong>函数的作用（比如<strong>trace_nfs_aop_readahead</strong>）</em></p>
+</li>
+<li><p>A1：</p>
+</li>
+<li><p><em>Q2：<strong>nfs_open_context</strong>是什么？</em></p>
+</li>
+<li><p>A2：</p>
+</li>
+<li><p><em>Q3：<strong>nfs_pgio_mirror</strong>是干嘛用的？</em></p>
+</li>
+<li><p>A3：</p>
+</li>
+</ul>
+<h2 id="1-2-Server"><a href="#1-2-Server" class="headerlink" title="1.2 Server"></a>1.2 Server</h2><p>服务器端收到请求，进行处理并返回结果。</p>
+<p><strong>重点研究nfsd4_read函数</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">kthread</span><br><span class="line">  nfsd</span><br><span class="line">    svc_process</span><br><span class="line">      svc_process_common</span><br><span class="line">        nfsd_dispatch</span><br><span class="line">          nfsd4_proc_compound  <span class="comment">// op-&gt;status = op-&gt;opdesc-&gt;op_func(...)</span></span><br><span class="line">            nfsd4_read  <span class="comment">/* 设置读取的位置、数量 */</span></span><br><span class="line">            nfsd4_encode_operation  <span class="comment">/* 将read operation的结果编码 */</span></span><br><span class="line">    		  nfsd4_encode_read  <span class="comment">/* in nfsd4_enc_ops */</span></span><br><span class="line">                nfsd4_encode_splice_read  <span class="comment">/* 将读取到的结果编码到resp用于传输给client */</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Questions-1"><a href="#Questions-1" class="headerlink" title="Questions"></a>Questions</h3><ul>
+<li><em>Q1：zero copy read？</em></li>
+<li>A1：<a class="link" target="_blank" rel="noopener" href="https://blog.csdn.net/u013256816/article/details/52589524">https://blog.csdn.net/u013256816/article/details/52589524<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<h1 id="2-读取失败（暂不做分析）"><a href="#2-读取失败（暂不做分析）" class="headerlink" title="2. 读取失败（暂不做分析）"></a>2. 读取失败（暂不做分析）</h1><h2 id="2-1-没有该文件"><a href="#2-1-没有该文件" class="headerlink" title="2.1 没有该文件"></a>2.1 没有该文件</h2><h3 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h3><p><a class="link" target="_blank" rel="noopener" href="https://github.com/mufiye/mufiye_backup/blob/master/nfs/nfs_client_read_fail_gdb_log.txt">https://github.com/mufiye/mufiye_backup/blob/master/nfs/nfs_client_read_fail_gdb_log.txt<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h3><p><a class="link" target="_blank" rel="noopener" href="https://github.com/mufiye/mufiye_backup/blob/master/nfs/nfs_server_read_fail_gdb_log.txt">https://github.com/mufiye/mufiye_backup/blob/master/nfs/nfs_server_read_fail_gdb_log.txt<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="2-2-no-reply（gdb-pause）"><a href="#2-2-no-reply（gdb-pause）" class="headerlink" title="2.2 no reply（gdb pause）"></a>2.2 no reply（gdb pause）</h2><p><a class="link" target="_blank" rel="noopener" href="https://github.com/mufiye/mufiye_backup/blob/master/nfs/nfs_client_read_disconnected_gdb_log.txt">https://github.com/mufiye/mufiye_backup/blob/master/nfs/nfs_client_read_disconnected_gdb_log.txt<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="2-3-poweroff"><a href="#2-3-poweroff" class="headerlink" title="2.3 poweroff"></a>2.3 poweroff</h2><p><a class="link" target="_blank" rel="noopener" href="https://github.com/mufiye/mufiye_backup/blob/master/nfs/nfs_client_read_poweroff_gdb_log.txt">https://github.com/mufiye/mufiye_backup/blob/master/nfs/nfs_client_read_poweroff_gdb_log.txt<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：nfs源代码解析1——read</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2022-06-15 14:07:16</li>
+        <li>
+            本文链接：http://mufiye.github.io/2022/06/15/nfs源代码解析1——read/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">#文件系统</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">#源码解析</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/nfs/">#nfs</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/read/">#read</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/06/15/nfs%E6%BA%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%902%E2%80%94%E2%80%94write/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">nfs源代码解析2——write</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/06/14/nfs%E6%BA%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%900%E2%80%94%E2%80%94%E8%BE%93%E5%87%BA%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">nfs源代码解析0——输出统计信息</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E8%AF%BB%E5%8F%96%E6%88%90%E5%8A%9F"><span class="nav-text">1. 读取成功</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Client"><span class="nav-text">1.1 Client</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E7%82%B9%E7%BB%93%E6%9E%84%E4%BD%93"><span class="nav-text">重点结构体</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89nfs-readdesc"><span class="nav-text">1）nfs_readdesc</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%EF%BC%89nfs-pageio-descriptor"><span class="nav-text">2）nfs_pageio_descriptor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%EF%BC%89nfs-page"><span class="nav-text">3）nfs_page</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4%EF%BC%89nfs-pgio-header"><span class="nav-text">4）nfs_pgio_header</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nfs-file-read"><span class="nav-text">nfs_file_read</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nfs-readahead"><span class="nav-text">nfs_readahead</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#readpage-async-filler"><span class="nav-text">readpage_async_filler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Questions"><span class="nav-text">Questions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Server"><span class="nav-text">1.2 Server</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Questions-1"><span class="nav-text">Questions</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E8%AF%BB%E5%8F%96%E5%A4%B1%E8%B4%A5%EF%BC%88%E6%9A%82%E4%B8%8D%E5%81%9A%E5%88%86%E6%9E%90%EF%BC%89"><span class="nav-text">2. 读取失败（暂不做分析）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E6%B2%A1%E6%9C%89%E8%AF%A5%E6%96%87%E4%BB%B6"><span class="nav-text">2.1 没有该文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Client"><span class="nav-text">Client</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server"><span class="nav-text">Server</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-no-reply%EF%BC%88gdb-pause%EF%BC%89"><span class="nav-text">2.2 no reply（gdb pause）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-poweroff"><span class="nav-text">2.3 poweroff</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

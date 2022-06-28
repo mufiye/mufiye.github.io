@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            nfs源代码解析——重点结构体 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">nfs源代码解析——重点结构体</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-06-24 12:50:15</span>
+        <span class="mobile">2022-06-24 12:50</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">文件系统</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">源码解析</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/nfs/">nfs</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.2k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>7 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="Super-Block"><a href="#Super-Block" class="headerlink" title="Super Block"></a>Super Block</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nfs_server</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_client</span> *	<span class="title">nfs_client</span>;</span>	<span class="comment">/* shared client and NFS4 state */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">client_link</span>;</span>	<span class="comment">/* List of other nfs_server structs</span></span><br><span class="line"><span class="comment">						 * that share the same client</span></span><br><span class="line"><span class="comment">						 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">master_link</span>;</span>	<span class="comment">/* link in master servers list */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_clnt</span> *	<span class="title">client</span>;</span>		<span class="comment">/* RPC client handle */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_clnt</span> *	<span class="title">client_acl</span>;</span>	<span class="comment">/* ACL RPC client handle */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nlm_host</span>		*<span class="title">nlm_host</span>;</span>	<span class="comment">/* NLM client handle */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_iostats</span> __<span class="title">percpu</span> *<span class="title">io_stats</span>;</span>	<span class="comment">/* I/O statistics */</span></span><br><span class="line">	<span class="type">atomic_long_t</span>		writeback;	<span class="comment">/* number of writeback pages */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		write_congested;<span class="comment">/* flag set when writeback gets too high */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		flags;		<span class="comment">/* various flags */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* The following are for internal use only. Also see uapi/linux/nfs_mount.h */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_LOOKUP_CACHE_NONEG	0x10000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_LOOKUP_CACHE_NONE	0x20000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_NORESVPORT		0x40000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_LEGACY_INTERFACE	0x80000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_LOCAL_FLOCK		0x100000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_LOCAL_FCNTL		0x200000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_SOFTERR		0x400000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_SOFTREVAL		0x800000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_WRITE_EAGER		0x01000000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_WRITE_WAIT		0x02000000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MOUNT_TRUNK_DISCOVERY	0x04000000</span></span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		fattr_valid;	<span class="comment">/* Valid attributes */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		caps;		<span class="comment">/* server capabilities */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		rsize;		<span class="comment">/* read size */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		rpages;		<span class="comment">/* read size (in pages) */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		wsize;		<span class="comment">/* write size */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		wpages;		<span class="comment">/* write size (in pages) */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		wtmult;		<span class="comment">/* server disk block size */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		dtsize;		<span class="comment">/* readdir size */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span>		port;		<span class="comment">/* &quot;port=&quot; setting */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		bsize;		<span class="comment">/* server block size */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_NFS_V4_2</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		gxasize;	<span class="comment">/* getxattr size */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		sxasize;	<span class="comment">/* setxattr size */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		lxasize;	<span class="comment">/* listxattr size */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		acregmin;	<span class="comment">/* attr cache timeouts */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		acregmax;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		acdirmin;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		acdirmax;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		namelen;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		options;	<span class="comment">/* extra options enabled by mount */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		clone_blksize;	<span class="comment">/* granularity of a CLONE operation */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_OPTION_FSCACHE	0x00000001	<span class="comment">/* - local caching enabled */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_OPTION_MIGRATION	0x00000002	<span class="comment">/* - NFSv4 migration enabled */</span></span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">enum</span> <span class="title">nfs4_change_attr_type</span></span></span><br><span class="line"><span class="class">				<span class="title">change_attr_type</span>;</span><span class="comment">/* Description of change attribute */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_fsid</span>		<span class="title">fsid</span>;</span></span><br><span class="line">	__u64			maxfilesize;	<span class="comment">/* maximum file size */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">timespec64</span>	<span class="title">time_delta</span>;</span>	<span class="comment">/* smallest time granularity */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		mount_time;	<span class="comment">/* when this fs was mounted */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">super_block</span>	*<span class="title">super</span>;</span>		<span class="comment">/* VFS super block */</span></span><br><span class="line">	<span class="type">dev_t</span>			s_dev;		<span class="comment">/* superblock dev numbers */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_auth_info</span>	<span class="title">auth_info</span>;</span>	<span class="comment">/* parsed auth flavors */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_NFS_FSCACHE</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">fscache_volume</span>	*<span class="title">fscache</span>;</span>	<span class="comment">/* superblock cookie */</span></span><br><span class="line">	<span class="type">char</span>			*fscache_uniq;	<span class="comment">/* Uniquifier (or NULL) */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	u32			pnfs_blksize;	<span class="comment">/* layout_blksize attr */</span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> IS_ENABLED(CONFIG_NFS_V4)</span></span><br><span class="line">	u32			attr_bitmask[<span class="number">3</span>];<span class="comment">/* V4 bitmask representing the set</span></span><br><span class="line"><span class="comment">						   of attributes supported on this</span></span><br><span class="line"><span class="comment">						   filesystem */</span></span><br><span class="line">	u32			attr_bitmask_nl[<span class="number">3</span>];</span><br><span class="line">						<span class="comment">/* V4 bitmask representing the</span></span><br><span class="line"><span class="comment">						   set of attributes supported</span></span><br><span class="line"><span class="comment">						   on this filesystem excluding</span></span><br><span class="line"><span class="comment">						   the label support bit. */</span></span><br><span class="line">	u32			exclcreat_bitmask[<span class="number">3</span>];</span><br><span class="line">						<span class="comment">/* V4 bitmask representing the</span></span><br><span class="line"><span class="comment">						   set of attributes supported</span></span><br><span class="line"><span class="comment">						   on this filesystem for the</span></span><br><span class="line"><span class="comment">						   exclusive create. */</span></span><br><span class="line">	u32			cache_consistency_bitmask[<span class="number">3</span>];</span><br><span class="line">						<span class="comment">/* V4 bitmask representing the subset</span></span><br><span class="line"><span class="comment">						   of change attribute, size, ctime</span></span><br><span class="line"><span class="comment">						   and mtime attributes supported by</span></span><br><span class="line"><span class="comment">						   the server */</span></span><br><span class="line">	u32			acl_bitmask;	<span class="comment">/* V4 bitmask representing the ACEs</span></span><br><span class="line"><span class="comment">						   that are supported on this</span></span><br><span class="line"><span class="comment">						   filesystem */</span></span><br><span class="line">	u32			fh_expire_type;	<span class="comment">/* V4 bitmask representing file</span></span><br><span class="line"><span class="comment">						   handle volatility type for</span></span><br><span class="line"><span class="comment">						   this filesystem */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">pnfs_layoutdriver_type</span>  *<span class="title">pnfs_curr_ld</span>;</span> <span class="comment">/* Active layout driver */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_wait_queue</span>	<span class="title">roc_rpcwaitq</span>;</span></span><br><span class="line">	<span class="type">void</span>			*pnfs_ld_data;	<span class="comment">/* per mount point data */</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* the following fields are protected by nfs_client-&gt;cl_lock */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rb_root</span>		<span class="title">state_owners</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">ida</span>		<span class="title">openowner_id</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">ida</span>		<span class="title">lockowner_id</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">state_owners_lru</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">layouts</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">delegations</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">ss_copies</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		mig_gen;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		mig_status;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MIG_IN_TRANSITION		(1)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MIG_FAILED			(2)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_MIG_TSM_POSSIBLE		(3)</span></span><br><span class="line"></span><br><span class="line">	<span class="type">void</span> (*destroy)(<span class="keyword">struct</span> nfs_server *);</span><br><span class="line"></span><br><span class="line">	<span class="type">atomic_t</span> active; <span class="comment">/* Keep trace of any activity to this server */</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* mountd-related mount options */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_storage</span>	<span class="title">mountd_address</span>;</span></span><br><span class="line">	<span class="type">size_t</span>			mountd_addrlen;</span><br><span class="line">	u32			mountd_version;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span>		mountd_port;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span>		mountd_protocol;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_wait_queue</span>	<span class="title">uoc_rpcwaitq</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* XDR related information */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		read_hdrsize;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* User namespace info */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span>	*<span class="title">cred</span>;</span></span><br><span class="line">	<span class="type">bool</span>			has_sec_mnt_opts;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nfs_client</span> &#123;</span></span><br><span class="line">	<span class="type">refcount_t</span>		cl_count;</span><br><span class="line">	<span class="type">atomic_t</span>		cl_mds_count;</span><br><span class="line">	<span class="type">int</span>			cl_cons_state;	<span class="comment">/* current construction state (-ve: init error) */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_READY		0		<span class="comment">/* ready to be used */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_INITING		1		<span class="comment">/* busy initialising */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_SESSION_INITING	2		<span class="comment">/* busy initialising  session */</span></span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		cl_res_state;	<span class="comment">/* NFS resources state */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_CALLBACK		1		<span class="comment">/* - callback started */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_IDMAP		2		<span class="comment">/* - idmap started */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_RENEWD		3		<span class="comment">/* - renewd started */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_STOP_RENEW	4		<span class="comment">/* no more state to renew */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_CHECK_LEASE_TIME	5		<span class="comment">/* need to check lease time */</span></span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		cl_flags;	<span class="comment">/* behavior switches */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_NORESVPORT	0		<span class="comment">/* - use ephemeral src port */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_DISCRTRY		1		<span class="comment">/* - disconnect on RPC retry */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_MIGRATION	2		<span class="comment">/* - transparent state migr */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_INFINITE_SLOTS	3		<span class="comment">/* - don&#x27;t limit TCP slots */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_NO_RETRANS_TIMEOUT	4	<span class="comment">/* - Disable retransmit timeouts */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_TSM_POSSIBLE	5		<span class="comment">/* - Maybe state migration */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_NOPING		6		<span class="comment">/* - don&#x27;t ping on connect */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_DS		7		<span class="comment">/* - Server is a DS */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_CS_REUSEPORT	8		<span class="comment">/* - reuse src port on reconnect */</span></span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_storage</span>	<span class="title">cl_addr</span>;</span>	<span class="comment">/* server identifier */</span></span><br><span class="line">	<span class="type">size_t</span>			cl_addrlen;</span><br><span class="line">	<span class="type">char</span> *			cl_hostname;	<span class="comment">/* hostname of server */</span></span><br><span class="line">	<span class="type">char</span> *			cl_acceptor;	<span class="comment">/* GSSAPI acceptor name */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">cl_share_link</span>;</span>	<span class="comment">/* link in global client list */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">cl_superblocks</span>;</span>	<span class="comment">/* List of nfs_server structs */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_clnt</span> *	<span class="title">cl_rpcclient</span>;</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">nfs_rpc_ops</span> *<span class="title">rpc_ops</span>;</span>	<span class="comment">/* NFS protocol vector */</span></span><br><span class="line">	<span class="type">int</span>			cl_proto;	<span class="comment">/* Network transport protocol */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_subversion</span> *	<span class="title">cl_nfs_mod</span>;</span>	<span class="comment">/* pointer to nfs version module */</span></span><br><span class="line"></span><br><span class="line">	u32			cl_minorversion;<span class="comment">/* NFSv4 minorversion */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		cl_nconnect;	<span class="comment">/* Number of connections */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		cl_max_connect; <span class="comment">/* max number of xprts allowed */</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *		cl_principal;  <span class="comment">/* used for machine cred */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> IS_ENABLED(CONFIG_NFS_V4)</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">cl_ds_clients</span>;</span> <span class="comment">/* auth flavor data servers */</span></span><br><span class="line">	u64			cl_clientid;	<span class="comment">/* constant */</span></span><br><span class="line">	nfs4_verifier		cl_confirm;	<span class="comment">/* Clientid verifier */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		cl_state;</span><br><span class="line"></span><br><span class="line">	<span class="type">spinlock_t</span>		cl_lock;</span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		cl_lease_time;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		cl_last_renewal;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">delayed_work</span>	<span class="title">cl_renewd</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_wait_queue</span>	<span class="title">cl_rpcwaitq</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* idmapper */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">idmap</span> *		<span class="title">cl_idmap</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Client owner identifier */</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *		cl_owner_id;</span><br><span class="line"></span><br><span class="line">	u32			cl_cb_ident;	<span class="comment">/* v4.0 callback identifier */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">nfs4_minor_version_ops</span> *<span class="title">cl_mvops</span>;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		cl_mig_gen;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* NFSv4.0 transport blocking */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs4_slot_table</span>	*<span class="title">cl_slot_tbl</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* The sequence id to use for the next CREATE_SESSION */</span></span><br><span class="line">	u32			cl_seqid;</span><br><span class="line">	<span class="comment">/* The flags used for obtaining the clientid during EXCHANGE_ID */</span></span><br><span class="line">	u32			cl_exchange_flags;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs4_session</span>	*<span class="title">cl_session</span>;</span>	<span class="comment">/* shared session */</span></span><br><span class="line">	<span class="type">bool</span>			cl_preserve_clid;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs41_server_owner</span> *<span class="title">cl_serverowner</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs41_server_scope</span> *<span class="title">cl_serverscope</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs41_impl_id</span>	*<span class="title">cl_implid</span>;</span></span><br><span class="line">	<span class="comment">/* nfs 4.1+ state protection modes: */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		cl_sp4_flags;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_SP4_MACH_CRED_MINIMAL  1	<span class="comment">/* Minimal sp4_mach_cred - state ops</span></span></span><br><span class="line"><span class="comment"><span class="meta">					 * must use machine cred */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_SP4_MACH_CRED_CLEANUP  2	<span class="comment">/* CLOSE and LOCKU */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_SP4_MACH_CRED_SECINFO  3	<span class="comment">/* SECINFO and SECINFO_NO_NAME */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_SP4_MACH_CRED_STATEID  4	<span class="comment">/* TEST_STATEID and FREE_STATEID */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_SP4_MACH_CRED_WRITE    5	<span class="comment">/* WRITE */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_SP4_MACH_CRED_COMMIT   6	<span class="comment">/* COMMIT */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NFS_SP4_MACH_CRED_PNFS_CLEANUP  7 <span class="comment">/* LAYOUTRETURN */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> IS_ENABLED(CONFIG_NFS_V4_1)</span></span><br><span class="line">	<span class="type">wait_queue_head_t</span>	cl_lock_waitq;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_NFS_V4_1 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_NFS_V4 */</span></span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Our own IP address, as a null-terminated string.</span></span><br><span class="line"><span class="comment">	 * This is used to generate the mv0 callback address.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">char</span>			cl_ipaddr[<span class="number">48</span>];</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net</span>		*<span class="title">cl_net</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">pending_cb_stateids</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Inode"><a href="#Inode" class="headerlink" title="Inode"></a>Inode</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nfs_inode</span> &#123;</span></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * The 64bit &#x27;inode number&#x27;</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	__u64 fileid;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * NFS file handle</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_fh</span>		<span class="title">fh</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Various flags</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		flags;			<span class="comment">/* atomic bit ops */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		cache_validity;		<span class="comment">/* bit mask */</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * read_cache_jiffies is when we started read-caching this inode.</span></span><br><span class="line"><span class="comment">	 * attrtimeo is for how long the cached information is assumed</span></span><br><span class="line"><span class="comment">	 * to be valid. A successful attribute revalidation doubles</span></span><br><span class="line"><span class="comment">	 * attrtimeo (up to acregmax/acdirmax), a failure resets it to</span></span><br><span class="line"><span class="comment">	 * acregmin/acdirmin.</span></span><br><span class="line"><span class="comment">	 *</span></span><br><span class="line"><span class="comment">	 * We need to revalidate the cached attrs for this inode if</span></span><br><span class="line"><span class="comment">	 *</span></span><br><span class="line"><span class="comment">	 *	jiffies - read_cache_jiffies &gt;= attrtimeo</span></span><br><span class="line"><span class="comment">	 *</span></span><br><span class="line"><span class="comment">	 * Please note the comparison is greater than or equal</span></span><br><span class="line"><span class="comment">	 * so that zero timeout values can be specified.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		read_cache_jiffies;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		attrtimeo;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		attrtimeo_timestamp;</span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		attr_gencount;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rb_root</span>		<span class="title">access_cache</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">access_cache_entry_lru</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">access_cache_inode_lru</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">		<span class="comment">/* Directory */</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">			<span class="comment">/* &quot;Generation counter&quot; for the attribute cache.</span></span><br><span class="line"><span class="comment">			 * This is bumped whenever we update the metadata</span></span><br><span class="line"><span class="comment">			 * on the server.</span></span><br><span class="line"><span class="comment">			 */</span></span><br><span class="line">			<span class="type">unsigned</span> <span class="type">long</span>	cache_change_attribute;</span><br><span class="line">			<span class="comment">/*</span></span><br><span class="line"><span class="comment">			 * This is the cookie verifier used for NFSv3 readdir</span></span><br><span class="line"><span class="comment">			 * operations</span></span><br><span class="line"><span class="comment">			 */</span></span><br><span class="line">			__be32		cookieverf[NFS_DIR_VERIFIER_SIZE];</span><br><span class="line">			<span class="comment">/* Readers: in-flight sillydelete RPC calls */</span></span><br><span class="line">			<span class="comment">/* Writers: rmdir */</span></span><br><span class="line">			<span class="class"><span class="keyword">struct</span> <span class="title">rw_semaphore</span>	<span class="title">rmdir_sem</span>;</span></span><br><span class="line">		&#125;;</span><br><span class="line">		<span class="comment">/* Regular file */</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">			<span class="type">atomic_long_t</span>	nrequests;</span><br><span class="line">			<span class="class"><span class="keyword">struct</span> <span class="title">nfs_mds_commit_info</span> <span class="title">commit_info</span>;</span></span><br><span class="line">			<span class="class"><span class="keyword">struct</span> <span class="title">mutex</span>	<span class="title">commit_mutex</span>;</span></span><br><span class="line">		&#125;;</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Open contexts for shared mmap writes */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">open_files</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> IS_ENABLED(CONFIG_NFS_V4)</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs4_cached_acl</span>	*<span class="title">nfs4_acl</span>;</span></span><br><span class="line">        <span class="comment">/* NFSv4 state */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">open_states</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs_delegation</span> __<span class="title">rcu</span> *<span class="title">delegation</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rw_semaphore</span>	<span class="title">rwsem</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* pNFS layout information */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">pnfs_layout_hdr</span> *<span class="title">layout</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_NFS_V4*/</span></span></span><br><span class="line">	<span class="comment">/* how many bytes have been written/read and how many bytes queued up */</span></span><br><span class="line">	__u64 write_io;</span><br><span class="line">	__u64 read_io;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_NFS_FSCACHE</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">fscache_cookie</span>	*<span class="title">fscache</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span>		<span class="title">vfs_inode</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_NFS_V4_2</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nfs4_xattr_cache</span> *<span class="title">xattr_cache</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="nfs-fh"><a href="#nfs-fh" class="headerlink" title="nfs_fh"></a>nfs_fh</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nfs_fh</span> &#123;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span>		size;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">char</span>		data[NFS_MAXFHSIZE];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：nfs源代码解析——重点结构体</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2022-06-24 12:50:15</li>
+        <li>
+            本文链接：http://mufiye.github.io/2022/06/24/nfs源代码解析——重点结构体/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">#文件系统</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">#源码解析</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/nfs/">#nfs</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/06/25/nfs%E5%A2%9E%E5%8A%A0%E8%80%97%E6%97%B6%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">nfs增加耗时统计信息</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/06/24/linux-kernel-5-19-rc2%E2%80%94%E2%80%94%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%87%8D%E7%82%B9%E7%BB%93%E6%9E%84%E4%BD%93/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">linux kernel 5.19-rc2——文件系统重点结构体</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Super-Block"><span class="nav-text">Super Block</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Inode"><span class="nav-text">Inode</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nfs-fh"><span class="nav-text">nfs_fh</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

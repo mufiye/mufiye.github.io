@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            rpc源代码解析 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">rpc源代码解析</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-06-21 11:25:06</span>
+        <span class="mobile">2022-06-21 11:25</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">源码解析</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/net/">net</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/rpc/">rpc</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>2.1k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>12 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="RPC-客户端"><a href="#RPC-客户端" class="headerlink" title="RPC - 客户端"></a>RPC - 客户端</h1><h2 id="rpc-clnt"><a href="#rpc-clnt" class="headerlink" title="rpc_clnt"></a>rpc_clnt</h2><p>代表一个client handle，由rpc_create创建，它会创建transport，并发送ping，判断是否对方支持这个RPC。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpc_clnt</span> &#123;</span></span><br><span class="line">    <span class="type">refcount_t</span>         cl_count;    <span class="comment">/* Number of references */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span>       cl_clid;     <span class="comment">/* client id */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>   <span class="title">cl_clients</span>;</span>  <span class="comment">/* Global list of clients */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>   <span class="title">cl_tasks</span>;</span>	<span class="comment">/* List of tasks */</span></span><br><span class="line">    <span class="type">atomic_t</span>           cl_pid;      <span class="comment">/* task PID counter */</span></span><br><span class="line">    <span class="type">spinlock_t</span>         cl_lock;     <span class="comment">/* spinlock */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpc_xprt</span> __<span class="title">rcu</span> *	<span class="title">cl_xprt</span>;</span>    <span class="comment">/* transport */</span></span><br><span class="line">    <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_procinfo</span> *<span class="title">cl_procinfo</span>;</span>	<span class="comment">/* procedure info */</span></span><br><span class="line">    u32			cl_prog,	<span class="comment">/* RPC program number */</span></span><br><span class="line">				cl_vers,	<span class="comment">/* RPC version number */</span></span><br><span class="line">				cl_maxproc;	<span class="comment">/* max procedure number */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpc_auth</span> *	<span class="title">cl_auth</span>;</span>	<span class="comment">/* authenticator */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_stat</span> *	<span class="title">cl_stats</span>;</span>	<span class="comment">/* per-program statistics */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_iostats</span> *	<span class="title">cl_metrics</span>;</span>	<span class="comment">/* per-client statistics */</span></span><br><span class="line">    ...</span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_timeout</span> *<span class="title">cl_timeout</span>;</span>	<span class="comment">/* Timeout strategy */</span></span><br><span class="line">    ...</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_clnt</span> *	<span class="title">cl_parent</span>;</span>	<span class="comment">/* Points to parent of clones */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_rtt</span>		<span class="title">cl_rtt_default</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_timeout</span>	<span class="title">cl_timeout_default</span>;</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_program</span> *<span class="title">cl_program</span>;</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *		cl_principal;	<span class="comment">/* use for machine cred */</span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> IS_ENABLED(CONFIG_SUNRPC_DEBUG)</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">dentry</span>		*<span class="title">cl_debugfs</span>;</span>	<span class="comment">/* debugfs directory */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_sysfs_client</span> *<span class="title">cl_sysfs</span>;</span>	<span class="comment">/* sysfs directory */</span></span><br><span class="line">	<span class="comment">/* cl_work is only needed after cl_xpi is no longer used,</span></span><br><span class="line"><span class="comment">	 * and that are of similar size</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">rpc_xprt_iter</span>	<span class="title">cl_xpi</span>;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">work_struct</span>	<span class="title">cl_work</span>;</span></span><br><span class="line">	&#125;;</span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span>	*<span class="title">cl_cred</span>;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		cl_max_connect; <span class="comment">/* max number of transports not to the same IP */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="rpc-xprt"><a href="#rpc-xprt" class="headerlink" title="rpc_xprt"></a>rpc_xprt</h2><p>代表一个连接（感觉有些像TCP连接），由xprt_create_transport创建。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpc_xprt</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">kref</span>		<span class="title">kref</span>;</span>		<span class="comment">/* Reference count */</span></span><br><span class="line">    <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_xprt_ops</span> *<span class="title">ops</span>;</span>		<span class="comment">/* transport methods */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span>		id;		<span class="comment">/* transport id */</span></span><br><span class="line">    </span><br><span class="line">    <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_timeout</span> *<span class="title">timeout</span>;</span>	<span class="comment">/* timeout parms */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_storage</span>	<span class="title">addr</span>;</span>		<span class="comment">/* server address */</span></span><br><span class="line">    <span class="type">size_t</span>			addrlen;	<span class="comment">/* size of server address */</span></span><br><span class="line">    <span class="type">int</span>			prot;		<span class="comment">/* IP protocol */</span></span><br><span class="line">    </span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span>		cong;		<span class="comment">/* current congestion */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		cwnd;		<span class="comment">/* congestion window */</span></span><br><span class="line">    </span><br><span class="line">    <span class="type">size_t</span>			max_payload;	<span class="comment">/* largest RPC payload size, in bytes */</span></span><br><span class="line">    </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpc_wait_queue</span>	<span class="title">binding</span>;</span>	<span class="comment">/* requests waiting on rpcbind */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpc_wait_queue</span>	<span class="title">sending</span>;</span>	<span class="comment">/* requests waiting to send */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpc_wait_queue</span>	<span class="title">pending</span>;</span>	<span class="comment">/* requests in flight */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpc_wait_queue</span>	<span class="title">backlog</span>;</span>	<span class="comment">/* waiting for slot */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">free</span>;</span>		<span class="comment">/* free slots */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span>		max_reqs;	<span class="comment">/* max number of slots */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		min_reqs;	<span class="comment">/* min number of slots */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		num_reqs;	<span class="comment">/* total slots */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		state;		<span class="comment">/* transport state */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>		resvport   : <span class="number">1</span>,	<span class="comment">/* use a reserved port */</span></span><br><span class="line">				        reuseport  : <span class="number">1</span>; <span class="comment">/* reuse port on reconnect */</span></span><br><span class="line">	<span class="type">atomic_t</span>		    swapper;	<span class="comment">/* we&#x27;re swapping over this transport */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>        bind_index;	<span class="comment">/* bind function index */</span></span><br><span class="line">    	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Multipath</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">xprt_switch</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Connection of transports</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		bind_timeout, reestablish_timeout;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		connect_cookie;	<span class="comment">/* A cookie that gets bumped every time the                                                  transport is reconnected */</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Disconnection of idle transports</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">work_struct</span>	<span class="title">task_cleanup</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">timer_list</span>	<span class="title">timer</span>;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		last_used,</span><br><span class="line">				        idle_timeout,</span><br><span class="line">				        connect_timeout,</span><br><span class="line">				        max_reconnect_timeout;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Send stuff</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">atomic_long_t</span>		queuelen;</span><br><span class="line">	<span class="type">spinlock_t</span>		transport_lock;	<span class="comment">/* lock transport info */</span></span><br><span class="line">	<span class="type">spinlock_t</span>		reserve_lock;	<span class="comment">/* lock slot table */</span></span><br><span class="line">	<span class="type">spinlock_t</span>		queue_lock;	<span class="comment">/* send/receive queue lock */</span></span><br><span class="line">	u32			xid;		<span class="comment">/* Next XID value to use */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_task</span> *	<span class="title">snd_task</span>;</span>	<span class="comment">/* Task blocked in send */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">xmit_queue</span>;</span>	<span class="comment">/* Send queue */</span></span><br><span class="line">	<span class="type">atomic_long_t</span>		xmit_queuelen;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_xprt</span>		*<span class="title">bc_xprt</span>;</span>	<span class="comment">/* NFSv4.1 backchannel */</span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(CONFIG_SUNRPC_BACKCHANNEL)</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_serv</span>		*<span class="title">bc_serv</span>;</span>       <span class="comment">/* The RPC service which will */</span></span><br><span class="line">						<span class="comment">/* process the callback */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		bc_alloc_max;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		bc_alloc_count;	<span class="comment">/* Total number of preallocs */</span></span><br><span class="line">	<span class="type">atomic_t</span>		bc_slot_count;	<span class="comment">/* Number of allocated slots */</span></span><br><span class="line">	<span class="type">spinlock_t</span>		bc_pa_lock;	<span class="comment">/* Protects the preallocated</span></span><br><span class="line"><span class="comment">						 * items */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">bc_pa_list</span>;</span>	<span class="comment">/* List of preallocated</span></span><br><span class="line"><span class="comment">						 * backchannel rpc_rqst&#x27;s */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_SUNRPC_BACKCHANNEL */</span></span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rb_root</span>		<span class="title">recv_queue</span>;</span>	<span class="comment">/* Receive queue */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">		<span class="type">unsigned</span> <span class="type">long</span>		bind_count,	<span class="comment">/* total number of binds */</span></span><br><span class="line">					connect_count,	<span class="comment">/* total number of connects */</span></span><br><span class="line">					connect_start,	<span class="comment">/* connect start timestamp */</span></span><br><span class="line">					connect_time,	<span class="comment">/* jiffies waiting for connect */</span></span><br><span class="line">					sends,		<span class="comment">/* how many complete requests */</span></span><br><span class="line">					recvs,		<span class="comment">/* how many complete requests */</span></span><br><span class="line">					bad_xids,	<span class="comment">/* lookup_rqst didn&#x27;t find XID */</span></span><br><span class="line">					max_slots;	<span class="comment">/* max rpc_slots used */</span></span><br><span class="line"></span><br><span class="line">		<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>	req_u,		<span class="comment">/* average requests on the wire */</span></span><br><span class="line">					bklog_u,	<span class="comment">/* backlog queue utilization */</span></span><br><span class="line">					sending_u,	<span class="comment">/* send q utilization */</span></span><br><span class="line">					pending_u;	<span class="comment">/* pend q utilization */</span></span><br><span class="line">	&#125; stat;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net</span>		*<span class="title">xprt_net</span>;</span></span><br><span class="line">	netns_tracker		ns_tracker;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span>		*servername;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span>		*address_strings[RPC_DISPLAY_MAX];</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> IS_ENABLED(CONFIG_SUNRPC_DEBUG)</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">dentry</span>		*<span class="title">debugfs</span>;</span>		<span class="comment">/* debugfs directory */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span>		<span class="title">rcu</span>;</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">xprt_class</span>	*<span class="title">xprt_class</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_sysfs_xprt</span>	*<span class="title">xprt_sysfs</span>;</span></span><br><span class="line">	<span class="type">bool</span>			main; <span class="comment">/*mark if this is the 1st transport */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="rpc-task"><a href="#rpc-task" class="headerlink" title="rpc_task"></a>rpc_task</h2><p>rpc_task表示一个RPC请求的整个处理过程，内部是一个有限状态机（一步对应的是一个rpc task的某个状态处理）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpc_task</span> &#123;</span></span><br><span class="line">    <span class="type">atomic_t</span>		tk_count;	<span class="comment">/* Reference count */</span></span><br><span class="line">    <span class="type">int</span>			tk_status;	<span class="comment">/* result of last operation */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">tk_task</span>;</span>	<span class="comment">/* global list of tasks */</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * callback：to be executed after waking up</span></span><br><span class="line"><span class="comment">	 * action：next procedure for async tasks</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">void</span>			(*tk_callback)(<span class="keyword">struct</span> rpc_task *);</span><br><span class="line">	<span class="type">void</span>			(*tk_action)(<span class="keyword">struct</span> rpc_task *);</span><br><span class="line">    </span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span>		tk_timeout;	<span class="comment">/* timeout for rpc_sleep() */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		tk_runstate;	<span class="comment">/* Task run status */</span></span><br><span class="line">    </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rpc_wait_queue</span> 	*<span class="title">tk_waitqueue</span>;</span>	<span class="comment">/* RPC wait queue we&#x27;re on */</span></span><br><span class="line">	<span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">work_struct</span>	<span class="title">tk_work</span>;</span>	<span class="comment">/* Async task work queue */</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">rpc_wait</span>		<span class="title">tk_wait</span>;</span>	<span class="comment">/* RPC wait */</span></span><br><span class="line">	&#125; u;</span><br><span class="line"></span><br><span class="line">	<span class="type">int</span>			tk_rpc_status;	<span class="comment">/* Result of last RPC operation */</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * RPC call state</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_message</span>	<span class="title">tk_msg</span>;</span>		<span class="comment">/* RPC call info */</span></span><br><span class="line">	<span class="type">void</span> *			tk_calldata;	<span class="comment">/* Caller private data */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_call_ops</span> *<span class="title">tk_ops</span>;</span>	<span class="comment">/* Caller callbacks */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_clnt</span> *	<span class="title">tk_client</span>;</span>	<span class="comment">/* RPC client */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_xprt</span> *	<span class="title">tk_xprt</span>;</span>	<span class="comment">/* Transport */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_cred</span> *	<span class="title">tk_op_cred</span>;</span>	<span class="comment">/* cred being operated on */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_rqst</span> *	<span class="title">tk_rqstp</span>;</span>	<span class="comment">/* RPC request */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">workqueue_struct</span>	*<span class="title">tk_workqueue</span>;</span>	<span class="comment">/* Normally rpciod, but could</span></span><br><span class="line"><span class="comment">						 * be any workqueue</span></span><br><span class="line"><span class="comment">						 */</span></span><br><span class="line">	<span class="type">ktime_t</span>			tk_start;	<span class="comment">/* RPC task init timestamp */</span></span><br><span class="line"></span><br><span class="line">	<span class="type">pid_t</span>			tk_owner;	<span class="comment">/* Process id for batching tasks */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span>		tk_flags;	<span class="comment">/* misc flags */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span>		tk_timeouts;	<span class="comment">/* maj timeouts */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> IS_ENABLED(CONFIG_SUNRPC_DEBUG) || IS_ENABLED(CONFIG_TRACEPOINTS)</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span>		tk_pid;		<span class="comment">/* debugging aid */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">char</span>		tk_priority : <span class="number">2</span>,<span class="comment">/* Task priority */</span></span><br><span class="line">				tk_garb_retry : <span class="number">2</span>,</span><br><span class="line">				tk_cred_retry : <span class="number">2</span>,</span><br><span class="line">				tk_rebind_retry : <span class="number">2</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="rpc-procinfo"><a href="#rpc-procinfo" class="headerlink" title="rpc_procinfo"></a>rpc_procinfo</h2><p>rpc_procinfo表示一个rpc例程</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpc_procinfo</span> &#123;</span></span><br><span class="line">	u32			p_proc;	        <span class="comment">/* RPC例程编号 */</span></span><br><span class="line">	<span class="type">kxdreproc_t</span>		p_encode;	<span class="comment">/* XDR编码函数，负责将RPC请求的信息以XDR的格式封装到报文中 */</span></span><br><span class="line">	<span class="type">kxdrdproc_t</span>		p_decode;	<span class="comment">/* XDR解码函数，负责解码RPC报文 */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		p_arglen;	<span class="comment">/* argument hdr length (u32) */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		p_replen;	<span class="comment">/* reply hdr length (u32) */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		p_timer;	<span class="comment">/* Which RTT timer to use */</span></span><br><span class="line">	u32			p_statidx;	        <span class="comment">/* Which procedure to account */</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *		p_name;		<span class="comment">/* name of procedure */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="rpc-message"><a href="#rpc-message" class="headerlink" title="rpc_message"></a>rpc_message</h2><p>rpc message里面包括传输的参数，返回的参数地址，发生&#x2F;接收时候用到编码&#x2F;解码函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpc_message</span> &#123;</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_procinfo</span> *<span class="title">rpc_proc</span>;</span>	<span class="comment">/* Procedure information，对应的例程 */</span></span><br><span class="line">	<span class="type">void</span> *			rpc_argp;	<span class="comment">/* Arguments，参数 */</span></span><br><span class="line">	<span class="type">void</span> *			rpc_resp;	<span class="comment">/* Result，结果 */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> *	<span class="title">rpc_cred</span>;</span>	<span class="comment">/* Credentials，用户信息 */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="rpc-task-setup"><a href="#rpc-task-setup" class="headerlink" title="rpc_task_setup"></a>rpc_task_setup</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rpc_task_setup</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_task</span> *<span class="title">task</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_clnt</span> *<span class="title">rpc_client</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_xprt</span> *<span class="title">rpc_xprt</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rpc_cred</span> *<span class="title">rpc_op_cred</span>;</span>	<span class="comment">/* credential being operated on */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_message</span> *<span class="title">rpc_message</span>;</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">rpc_call_ops</span> *<span class="title">callback_ops</span>;</span></span><br><span class="line">	<span class="type">void</span> *callback_data;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">workqueue_struct</span> *<span class="title">workqueue</span>;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span> flags;</span><br><span class="line">	<span class="type">signed</span> <span class="type">char</span> priority;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="workqueue-struct"><a href="#workqueue-struct" class="headerlink" title="workqueue_struct"></a>workqueue_struct</h2><ul>
+<li>rpciod_workqueue：调用rpc_execute运行rpc task状态机。同步RPC调用运行在调用者的运行上下文，异步RPC在这个work queue执行rpc_execute。</li>
+<li>xprtiod_workqueue：处理网络收发</li>
+<li>nfsiod_workqueue：rpc task使用结束后，需要调用rpc_free_task进行回收，回收可以同步，也可以异步，异步回收时在这个work queue中。这是nfs的RPC请求时提供的。</li>
+</ul>
+<h2 id="rpc-task处理流程"><a href="#rpc-task处理流程" class="headerlink" title="rpc task处理流程"></a>rpc task处理流程</h2><p>RPC的处理流程本质上是一个有限状态机，状态机状态的改变通过修改task-&gt;tk_action实现（处理函数为__rpc_execute）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// high-level RPC interface.</span></span><br><span class="line"><span class="comment">/* 0.  Initial state */</span></span><br><span class="line">call_start</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 1.  Reserve an RPC call slot */</span></span><br><span class="line">call_reserve</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 1b.  Grok the result of xprt_reserve() */</span></span><br><span class="line">call_reserveresult</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 1c.  Retry reserving an RPC call slot */</span></span><br><span class="line">call_retry_reserve</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 2.  Bind and/or refresh the credentials */</span></span><br><span class="line">call_refresh</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 2a.  Process the results of a credential refresh */</span></span><br><span class="line">call_refreshresult</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 2b.  Allocate the buffer. */</span></span><br><span class="line">call_allocate</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 3.  Encode arguments of an RPC call */</span></span><br><span class="line">call_encode</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 4.  Get the server port number if not yet set */</span></span><br><span class="line">call_bind</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 4a.  Sort out bind result */</span></span><br><span class="line">call_bind_status</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 4b.  Connect to the RPC server */</span></span><br><span class="line">call_connect</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 4c.  Sort out connect result */</span></span><br><span class="line">call_connect_status</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 5.  Transmit the RPC request, and wait for reply */</span></span><br><span class="line">call_transmit</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 5a.  Handle cleanup after a transmission */</span></span><br><span class="line">call_transmit_status</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 5b.  Send the backchannel RPC reply. */</span></span><br><span class="line">call_bc_transmit</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 6.  Sort out the RPC call status */</span></span><br><span class="line">call_status</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 7.  Decode the RPC reply */</span></span><br><span class="line">call_decode</span><br></pre></td></tr></table></figure>
+<h1 id="RPC-服务器端"><a href="#RPC-服务器端" class="headerlink" title="RPC - 服务器端"></a>RPC - 服务器端</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Process the RPC request. */</span></span><br><span class="line">svc_process</span><br><span class="line">    </span><br><span class="line"><span class="comment">/* Common routine for processing the RPC request. */</span></span><br><span class="line">svc_process_common</span><br></pre></td></tr></table></figure>
+
+<h2 id="svc-rqst"><a href="#svc-rqst" class="headerlink" title="svc_rqst"></a>svc_rqst</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * The context of a single thread, including the request currently being</span></span><br><span class="line"><span class="comment"> * processed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">svc_rqst</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">rq_all</span>;</span>		<span class="comment">/* all threads list */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span>		<span class="title">rq_rcu_head</span>;</span>	<span class="comment">/* for RCU deferred kfree */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_xprt</span> *	<span class="title">rq_xprt</span>;</span>	<span class="comment">/* transport ptr */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_storage</span>	<span class="title">rq_addr</span>;</span>	<span class="comment">/* peer address */</span></span><br><span class="line">	<span class="type">size_t</span>			rq_addrlen;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_storage</span>	<span class="title">rq_daddr</span>;</span>	<span class="comment">/* dest addr of request - reply from here */</span></span><br><span class="line">    <span class="type">size_t</span>			rq_daddrlen;</span><br><span class="line">    </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">svc_serv</span> *	<span class="title">rq_server</span>;</span>	<span class="comment">/* RPC service definition */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_pool</span> *	<span class="title">rq_pool</span>;</span>	<span class="comment">/* thread pool */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">svc_procedure</span> *<span class="title">rq_procinfo</span>;</span><span class="comment">/* procedure info */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">auth_ops</span> *	<span class="title">rq_authop</span>;</span>	<span class="comment">/* authentication flavour */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_cred</span>		<span class="title">rq_cred</span>;</span>	<span class="comment">/* auth info */</span></span><br><span class="line">	<span class="type">void</span> *			rq_xprt_ctxt;	<span class="comment">/* transport specific context ptr */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_deferred_req</span>*<span class="title">rq_deferred</span>;</span>	<span class="comment">/* deferred request we are replaying */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">xdr_buf</span>		<span class="title">rq_arg</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">xdr_stream</span>	<span class="title">rq_arg_stream</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">xdr_stream</span>	<span class="title">rq_res_stream</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span>		*<span class="title">rq_scratch_page</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">xdr_buf</span>		<span class="title">rq_res</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span>		*<span class="title">rq_pages</span>[<span class="title">RPCSVC_MAXPAGES</span> + 1];</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *		*<span class="title">rq_respages</span>;</span>	<span class="comment">/* points into rq_pages */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *		*<span class="title">rq_next_page</span>;</span> <span class="comment">/* next reply page to use */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *		*<span class="title">rq_page_end</span>;</span>  <span class="comment">/* one past the last page */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">pagevec</span>		<span class="title">rq_pvec</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kvec</span>		<span class="title">rq_vec</span>[<span class="title">RPCSVC_MAXPAGES</span>];</span> <span class="comment">/* generally useful.. */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bio_vec</span>		<span class="title">rq_bvec</span>[<span class="title">RPCSVC_MAXPAGES</span>];</span></span><br><span class="line"></span><br><span class="line">	__be32			rq_xid;		<span class="comment">/* transmission id */</span></span><br><span class="line">	u32			rq_prog;	<span class="comment">/* program number */</span></span><br><span class="line">	u32			rq_vers;	<span class="comment">/* program version */</span></span><br><span class="line">	u32			rq_proc;	<span class="comment">/* procedure number */</span></span><br><span class="line">	u32			rq_prot;	<span class="comment">/* IP protocol */</span></span><br><span class="line">	<span class="type">int</span>			rq_cachetype;	<span class="comment">/* catering to nfsd */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	RQ_SECURE	(0)			<span class="comment">/* secure port */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	RQ_LOCAL	(1)			<span class="comment">/* local request */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	RQ_USEDEFERRAL	(2)			<span class="comment">/* use deferral */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	RQ_DROPME	(3)			<span class="comment">/* drop current reply */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	RQ_SPLICE_OK	(4)			<span class="comment">/* turned off in gss privacy</span></span></span><br><span class="line"><span class="comment"><span class="meta">						 * to prevent encrypting page</span></span></span><br><span class="line"><span class="comment"><span class="meta">						 * cache pages */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	RQ_VICTIM	(5)			<span class="comment">/* about to be shut down */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	RQ_BUSY		(6)			<span class="comment">/* request is busy */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	RQ_DATA		(7)			<span class="comment">/* request has data */</span></span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span>		rq_flags;	<span class="comment">/* flags field */</span></span><br><span class="line">	<span class="type">ktime_t</span>			rq_qtime;	<span class="comment">/* enqueue time */</span></span><br><span class="line"></span><br><span class="line">	<span class="type">void</span> *			rq_argp;	<span class="comment">/* decoded arguments */</span></span><br><span class="line">	<span class="type">void</span> *			rq_resp;	<span class="comment">/* xdr&#x27;d results */</span></span><br><span class="line">	<span class="type">void</span> *			rq_auth_data;	<span class="comment">/* flavor-specific data */</span></span><br><span class="line">	__be32			rq_auth_stat;	<span class="comment">/* authentication status */</span></span><br><span class="line">	<span class="type">int</span>			rq_auth_slack;	<span class="comment">/* extra space xdr code</span></span><br><span class="line"><span class="comment">						 * should leave in head</span></span><br><span class="line"><span class="comment">						 * for krb5i, krb5p.</span></span><br><span class="line"><span class="comment">						 */</span></span><br><span class="line">	<span class="type">int</span>			rq_reserved;	<span class="comment">/* space on socket outq</span></span><br><span class="line"><span class="comment">						 * reserved for this request</span></span><br><span class="line"><span class="comment">						 */</span></span><br><span class="line">	<span class="type">ktime_t</span>			rq_stime;	<span class="comment">/* start time */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">cache_req</span>	<span class="title">rq_chandle</span>;</span>	<span class="comment">/* handle passed to caches for </span></span><br><span class="line"><span class="comment">						 * request delaying </span></span><br><span class="line"><span class="comment">						 */</span></span><br><span class="line">	<span class="comment">/* Catering to nfsd */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">auth_domain</span> *	<span class="title">rq_client</span>;</span>	<span class="comment">/* RPC peer info */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">auth_domain</span> *	<span class="title">rq_gssclient</span>;</span>	<span class="comment">/* &quot;gss/&quot;-style peer info */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_cacherep</span> *	<span class="title">rq_cacherep</span>;</span>	<span class="comment">/* cache info */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">task_struct</span>	*<span class="title">rq_task</span>;</span>	<span class="comment">/* service thread */</span></span><br><span class="line">	<span class="type">spinlock_t</span>		rq_lock;	<span class="comment">/* per-request lock */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">net</span>		*<span class="title">rq_bc_net</span>;</span>	<span class="comment">/* pointer to backchannel&#x27;s</span></span><br><span class="line"><span class="comment">						 * net namespace</span></span><br><span class="line"><span class="comment">						 */</span></span><br><span class="line">	<span class="type">void</span> **			rq_lease_breaker; <span class="comment">/* The v4 client breaking a lease */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="svc-serv"><a href="#svc-serv" class="headerlink" title="svc_serv"></a>svc_serv</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * RPC service.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * An RPC service is a ``daemon,&#x27;&#x27; possibly multithreaded, which</span></span><br><span class="line"><span class="comment"> * receives and processes incoming RPC messages.</span></span><br><span class="line"><span class="comment"> * It has one or more transport sockets associated with it, and maintains</span></span><br><span class="line"><span class="comment"> * a list of idle threads waiting for input.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * We currently do not support more than one RPC program per daemon.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">svc_serv</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_program</span> *	<span class="title">sv_program</span>;</span>	<span class="comment">/* RPC program */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_stat</span> *	<span class="title">sv_stats</span>;</span>	<span class="comment">/* RPC statistics */</span></span><br><span class="line">	<span class="type">spinlock_t</span>		sv_lock;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kref</span>		<span class="title">sv_refcnt</span>;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		sv_nrthreads;	<span class="comment">/* # of server threads */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		sv_maxconn;	<span class="comment">/* max connections allowed or</span></span><br><span class="line"><span class="comment">						 * &#x27;0&#x27; causing max to be based</span></span><br><span class="line"><span class="comment">						 * on number of threads. */</span></span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		sv_max_payload;	<span class="comment">/* datagram payload size */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		sv_max_mesg;	<span class="comment">/* max_payload + 1 page for overheads */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		sv_xdrsize;	<span class="comment">/* XDR buffer size */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">sv_permsocks</span>;</span>	<span class="comment">/* all permanent sockets */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">sv_tempsocks</span>;</span>	<span class="comment">/* all temporary sockets */</span></span><br><span class="line">	<span class="type">int</span>			sv_tmpcnt;	<span class="comment">/* count of temporary sockets */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">timer_list</span>	<span class="title">sv_temptimer</span>;</span>	<span class="comment">/* timer for aging temporary sockets */</span></span><br><span class="line"></span><br><span class="line">	<span class="type">char</span> *			sv_name;	<span class="comment">/* service name */</span></span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		sv_nrpools;	<span class="comment">/* number of thread pools */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_pool</span> *	<span class="title">sv_pools</span>;</span>	<span class="comment">/* array of thread pools */</span></span><br><span class="line">	<span class="type">int</span>			(*sv_threadfn)(<span class="type">void</span> *data);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(CONFIG_SUNRPC_BACKCHANNEL)</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">sv_cb_list</span>;</span>	<span class="comment">/* queue for callback requests</span></span><br><span class="line"><span class="comment">						 * that arrive over the same</span></span><br><span class="line"><span class="comment">						 * connection */</span></span><br><span class="line">	<span class="type">spinlock_t</span>		sv_cb_lock;	<span class="comment">/* protects the svc_cb_list */</span></span><br><span class="line">	<span class="type">wait_queue_head_t</span>	sv_cb_waitq;	<span class="comment">/* sleep here if there are no</span></span><br><span class="line"><span class="comment">						 * entries in the svc_cb_list */</span></span><br><span class="line">	<span class="type">bool</span>			sv_bc_enabled;	<span class="comment">/* service uses backchannel */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_SUNRPC_BACKCHANNEL */</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="svc-procedure"><a href="#svc-procedure" class="headerlink" title="svc_procedure"></a>svc_procedure</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * RPC procedure info</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">svc_procedure</span> &#123;</span></span><br><span class="line">	<span class="comment">/* process the request: */</span></span><br><span class="line">	__be32			(*pc_func)(<span class="keyword">struct</span> svc_rqst *);</span><br><span class="line">	<span class="comment">/* XDR decode args: */</span></span><br><span class="line">	<span class="type">bool</span>			(*pc_decode)(<span class="keyword">struct</span> svc_rqst *rqstp,</span><br><span class="line">					     <span class="keyword">struct</span> xdr_stream *xdr);</span><br><span class="line">	<span class="comment">/* XDR encode result: */</span></span><br><span class="line">	<span class="type">bool</span>			(*pc_encode)(<span class="keyword">struct</span> svc_rqst *rqstp,</span><br><span class="line">					     <span class="keyword">struct</span> xdr_stream *xdr);</span><br><span class="line">	<span class="comment">/* XDR free result: */</span></span><br><span class="line">	<span class="type">void</span>			(*pc_release)(<span class="keyword">struct</span> svc_rqst *);</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		pc_argsize;	<span class="comment">/* argument struct size */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		pc_ressize;	<span class="comment">/* result struct size */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		pc_cachetype;	<span class="comment">/* cache info (NFS) */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		pc_xdrressize;	<span class="comment">/* maximum size of XDR reply */</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *		pc_name;	<span class="comment">/* for display */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="svc-program"><a href="#svc-program" class="headerlink" title="svc_program"></a>svc_program</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * List of RPC programs on the same transport endpoint</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">svc_program</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_program</span> *	<span class="title">pg_next</span>;</span>	<span class="comment">/* other programs (same xprt) */</span></span><br><span class="line">	u32			pg_prog;	<span class="comment">/* program number */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		pg_lovers;	<span class="comment">/* lowest version */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		pg_hivers;	<span class="comment">/* highest version */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		pg_nvers;	<span class="comment">/* number of versions */</span></span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">svc_version</span> **<span class="title">pg_vers</span>;</span>	<span class="comment">/* version array */</span></span><br><span class="line">	<span class="type">char</span> *			pg_name;	<span class="comment">/* service name */</span></span><br><span class="line">	<span class="type">char</span> *			pg_class;	<span class="comment">/* class name: services sharing authentication */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_stat</span> *	<span class="title">pg_stats</span>;</span>	<span class="comment">/* rpc statistics */</span></span><br><span class="line">	<span class="type">int</span>			(*pg_authenticate)(<span class="keyword">struct</span> svc_rqst *);</span><br><span class="line">	__be32			(*pg_init_request)(<span class="keyword">struct</span> svc_rqst *,</span><br><span class="line">						   <span class="type">const</span> <span class="keyword">struct</span> svc_program *,</span><br><span class="line">						   <span class="keyword">struct</span> svc_process_info *);</span><br><span class="line">	<span class="type">int</span>			(*pg_rpcbind_set)(<span class="keyword">struct</span> net *net,</span><br><span class="line">						  <span class="type">const</span> <span class="keyword">struct</span> svc_program *,</span><br><span class="line">						  u32 version, <span class="type">int</span> family,</span><br><span class="line">						  <span class="type">unsigned</span> <span class="type">short</span> proto,</span><br><span class="line">						  <span class="type">unsigned</span> <span class="type">short</span> port);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="svc-stat"><a href="#svc-stat" class="headerlink" title="svc_stat"></a>svc_stat</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">svc_stat</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">svc_program</span> *	<span class="title">program</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		netcnt,</span><br><span class="line">				netudpcnt,</span><br><span class="line">				nettcpcnt,</span><br><span class="line">				nettcpconn;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span>		rpccnt,</span><br><span class="line">				rpcbadfmt,</span><br><span class="line">				rpcbadauth,</span><br><span class="line">				rpcbadclnt;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><a class="link" target="_blank" rel="noopener" href="https://www.codeleading.com/article/26211011766/">https://www.codeleading.com/article/26211011766/<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link" target="_blank" rel="noopener" href="https://github.com/chenxiaosonggithub/blog/blob/master/kernel/nfs/nfs.md">https://github.com/chenxiaosonggithub/blog/blob/master/kernel/nfs/nfs.md<i class="fas fa-external-link-alt"></i></a></li>
+</ol>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：rpc源代码解析</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2022-06-21 11:25:06</li>
+        <li>
+            本文链接：http://mufiye.github.io/2022/06/21/rpc源代码解析/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">#源码解析</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/net/">#net</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/rpc/">#rpc</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/06/24/linux-kernel-5-19-rc2%E2%80%94%E2%80%94%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%87%8D%E7%82%B9%E7%BB%93%E6%9E%84%E4%BD%93/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">linux kernel 5.19-rc2——文件系统重点结构体</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/06/20/CMU15-445%E7%AC%94%E8%AE%B04%E2%80%94%E2%80%94Buffer-Pools/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CMU15-445笔记4——Buffer Pools</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RPC-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-text">RPC - 客户端</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#rpc-clnt"><span class="nav-text">rpc_clnt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpc-xprt"><span class="nav-text">rpc_xprt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpc-task"><span class="nav-text">rpc_task</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpc-procinfo"><span class="nav-text">rpc_procinfo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpc-message"><span class="nav-text">rpc_message</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpc-task-setup"><span class="nav-text">rpc_task_setup</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#workqueue-struct"><span class="nav-text">workqueue_struct</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpc-task%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="nav-text">rpc task处理流程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RPC-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF"><span class="nav-text">RPC - 服务器端</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#svc-rqst"><span class="nav-text">svc_rqst</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#svc-serv"><span class="nav-text">svc_serv</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#svc-procedure"><span class="nav-text">svc_procedure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#svc-program"><span class="nav-text">svc_program</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#svc-stat"><span class="nav-text">svc_stat</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>
