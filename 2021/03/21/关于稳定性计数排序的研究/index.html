@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            关于稳定性计数排序的研究 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">关于稳定性计数排序的研究</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-03-21 19:31:39</span>
+        <span class="mobile">2021-03-21 19:31</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">排序算法</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F/">计数排序</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.4k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>5 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="关于稳定性计数排序的研究"><a href="#关于稳定性计数排序的研究" class="headerlink" title="关于稳定性计数排序的研究"></a>关于稳定性计数排序的研究</h1><h2 id="一、介绍"><a href="#一、介绍" class="headerlink" title="一、介绍"></a>一、介绍</h2><p>我们一开始接触的排序算法大都是如冒泡排序、插入排序和选择排序这类的基于比较的排序算法，这类基于比较的排序算法的时间复杂度限制在了$O(nlogn)$。那么有没有时间复杂度更优的排序算法呢，当然是有的，有这么一些算法不需要通过比较就进行排序，如计数排序、桶排序和基数排序，这些算法牺牲了空间复杂度换取了时间复杂度。在本文中，我们主要研究的是计数排序及其的排序稳定性。</p>
+<h2 id="二、算法介绍"><a href="#二、算法介绍" class="headerlink" title="二、算法介绍"></a>二、算法介绍</h2><p>计数排序是一种非基于比较的排序算法，它的优势在于在对一定范围内的整数排序时，它的算法复杂度为$O(n+k)$，其中k是整数的范围，此时计数排序快于任何比较排序算法。假定给定的排序数组为A，在计数排序中我们定义一个大小为数组A中最大值减去最小值的值的数组B，该数组B就是计数排序的关键，总的来说这个数组B的下标对应要求排序数组A中的元素值，而该数组B中的元素对应相应元素在数组A中出现次数的信息。定义完了数组B之后，我们该如何在数组B中记录信息来完成对于数组A的排序呢？这里的操作方式就涉及了计数排序的算法稳定性的问题，算法的稳定性是指相同大小的元素在经过排序后其相对位置不发生改变。</p>
+<p>我们首先介绍一下不稳定的排序方式，我们遍历数组A中的元素，对于相应数组B下标的元素数值加1，那么我们就记录下了A中各个元素的出现次数。排序的过程就是我们新建一个空的数组，正序遍历数组B，发现一个元素值不为空，就往空的数组中加入该下标对应的大小的A中元素，之后B相应的元素减1，循环往复直到该元素变为1，下标加一进行下一次查找，直到B中元素全为0。我们可以很容易地发现，这种算法没有考虑相同大小元素原先的位置关系，排序得到的结果原本相同大小的元素的相对位置关系可能是错误的，因此这是一种不稳定的排序方式，那么怎么才能做到保证稳定性呢？</p>
+<p>其实很简单，我们只需要在记录数组A中元素信息的数组B中加入记录相同大小元素的位置关系的信息就可以了。我们在上述不稳定排序给数组B赋值的基础上，使B中所有元素的值都等于其自身加上所有下标小于它元素的值，这相当于是记录了不同大小元素在排序完的数组中的位置。之后为了保证稳定性，也就是使相同大小元素的相对位置不发生改变，我们倒着遍历数组A中的下标，对于A中的元素找到数组B中其排序完时应所处的位置，找到后将数组B中相应元素的值减去1，这就实现了排序的稳定性。</p>
+<h2 id="三、代码实现"><a href="#三、代码实现" class="headerlink" title="三、代码实现"></a>三、代码实现</h2><p>本文使用python实现了两种计数排序，分别定义了两种函数，其中counting_sort_unstable为不稳定的计数排序，counting_sort为稳定的计数排序，最终给出一个列表进行测试。我用这个例子解释一下为什么稳定的计数排序要倒序遍历数组A，可以发现A中有两个5，而通过计算可以发现在遍历开始前数组B中5对应的元素值为9，那么我们倒着遍历数组A，找到了下标较大的那个5，将其放在了SA的下标8的位置，此时数组B中的5对应的元素值减1变为8，而我们继续遍历会遍历到另一个下标较小的5，此时将其放在SA中下标为7的位置，可见如果顺着遍历就无法实现该算法的稳定性。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">#不稳定的计数排序</span><br><span class="line">def counting_sort_unstable(A):</span><br><span class="line">    if A==[]:</span><br><span class="line">        return []</span><br><span class="line">    </span><br><span class="line">    lenA=len(A)</span><br><span class="line">    maxA=max(A)</span><br><span class="line">    minA=min(A)</span><br><span class="line">    SA=[]</span><br><span class="line">    B=[0 for i in range(minA,maxA+1)]</span><br><span class="line">    </span><br><span class="line">    for num in A:</span><br><span class="line">        B[num-minA]+=1</span><br><span class="line">    for i in range(len(B)):</span><br><span class="line">        while B[i]&gt;0:</span><br><span class="line">           SA.append(i+minA)</span><br><span class="line">           B[i]-=1</span><br><span class="line">    return SA</span><br><span class="line"></span><br><span class="line">#稳定的计数排序</span><br><span class="line">def counting_sort(A):</span><br><span class="line">    if A==[]:</span><br><span class="line">        return []</span><br><span class="line">    </span><br><span class="line">    lenA=len(A)</span><br><span class="line">    maxA=max(A)</span><br><span class="line">    minA=min(A)</span><br><span class="line">    SA=[0 for i in range(len(A))]</span><br><span class="line">    B=[0 for i in range(minA,maxA+1)]</span><br><span class="line">    </span><br><span class="line">    for num in A:</span><br><span class="line">        B[num-minA]+=1</span><br><span class="line">    for i in range(1,len(B)):</span><br><span class="line">        B[i]=B[i]+B[i-1]</span><br><span class="line">    for i in reversed(range(0,len(A))): #reversed表示逆序遍历，为了使排序稳定</span><br><span class="line">        SA[B[A[i] - minA]-1] = A[i]#-1是因为下标从0开始的</span><br><span class="line">        B[A[i] - minA] -= 1 #每归位一个元素，就少一个元素</span><br><span class="line"></span><br><span class="line">    return SA</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、结论"><a href="#四、结论" class="headerlink" title="四、结论"></a>四、结论</h2><p>在本文中，我实现了计数排序并且研究了稳定的计数排序和不稳定的计数排序，我总结得出计数排序的本质是记录数组的元素的位置信息来将其进行重构，而为了实现稳定的计数排序其本质就是不光要记录不同大小元素的位置信息还要记录相同大小元素的位置信息。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：关于稳定性计数排序的研究</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2021-03-21 19:31:39</li>
+        <li>
+            本文链接：http://mufiye.github.io/2021/03/21/关于稳定性计数排序的研究/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">#排序算法</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F/">#计数排序</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/04/05/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%A7%A3%E5%86%B3%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97%E9%97%AE%E9%A2%98/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">动态规划解决最长递增子序列问题</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/10/%E5%85%B3%E4%BA%8E%E6%B1%82%E9%80%86%E5%BA%8F%E5%AF%B9%E9%97%AE%E9%A2%98%E7%9A%84%E7%A0%94%E7%A9%B6/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">关于求逆序对问题的研究</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E7%A8%B3%E5%AE%9A%E6%80%A7%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A0%94%E7%A9%B6"><span class="nav-text">关于稳定性计数排序的研究</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%8B%E7%BB%8D"><span class="nav-text">一、介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%AE%97%E6%B3%95%E4%BB%8B%E7%BB%8D"><span class="nav-text">二、算法介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">三、代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%93%E8%AE%BA"><span class="nav-text">四、结论</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

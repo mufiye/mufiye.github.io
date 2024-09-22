@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            使用Karger算法解决最小割问题 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">使用Karger算法解决最小割问题</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-05-06 13:21:58</span>
+        <span class="mobile">2021-05-06 13:21</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%9C%80%E5%B0%8F%E5%89%B2/">最小割</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/Karger/">Karger</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>912 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>3 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="使用Karger算法解决最小割问题"><a href="#使用Karger算法解决最小割问题" class="headerlink" title="使用Karger算法解决最小割问题"></a>使用Karger算法解决最小割问题</h1><h2 id="一、问题介绍"><a href="#一、问题介绍" class="headerlink" title="一、问题介绍"></a>一、问题介绍</h2><p>把图 G&#x3D;(V, E) 的节点 V 分割成两个部分 S 和 S-V 的边的集合称为割，而最小割问题就是输⼊是⽆向图 G，求解把图 G 分割成两个部分的边数最⼩的割。而随机算法是指该算法中使用了随机函数，且随机函数的返回值直接或者间接的影响了算法的执行流程或执行结果。我们将使用随机算法中的Karger算法来解决最小割问题。</p>
+<h2 id="二、算法"><a href="#二、算法" class="headerlink" title="二、算法"></a>二、算法</h2><p>Karger算法的基本思路是每次随机选择一条边，把边的两个端点合二为一。原来与这两个点邻接的点，现在把边连到合并后的节点去，把原来的点和边删除。当合并至只剩两个点时，相当于将原图的点划分成两个集合。这两个点之间的连边数就是形成的割的边数。Karger 算法属于蒙特卡洛随机算法，假设输⼊图有 n个节点，该算法能保证其得到正确解的概率为Pr(\frac{2}{n^{2}})。</p>
+<h2 id="三、代码实现"><a href="#三、代码实现" class="headerlink" title="三、代码实现"></a>三、代码实现</h2><p>我使用python实现了使用Karger算法解决最小割问题。我使用字典G存储了图的邻接列表作为输入，输出的是割的边数以及边的信息，在karger算法中，会不断合并图中的顶点，当最后只剩下两个顶点的时候，只需查看邻接列表中顶点的邻接节点数就可以得到割的边数。同时我定义了一个字典V用来记录和最后得到分割的两个图，每当顶点合并时，我就会更新这个字典。最后通过这个字典中存储的两个图的顶点来得到割的边。</p>
+<p>同时由于Karger算法不能保证得到最小割，我在实际实现中运行100次Karger算法来求最小割，在我的试验中，得到了最小割。</p>
+<p><strong>代码：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> copy</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">choose_random_key</span>(<span class="params">G</span>):</span><br><span class="line">    v1 = random.choice(<span class="built_in">list</span>(G.keys()))</span><br><span class="line">    v2 = random.choice(<span class="built_in">list</span>(G[v1]))</span><br><span class="line">    <span class="keyword">return</span> v1, v2</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">karger</span>(<span class="params">graph</span>):</span><br><span class="line">    G=copy.deepcopy(graph)</span><br><span class="line">    keys=<span class="built_in">list</span>(graph.keys())</span><br><span class="line">    V=&#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> keys:</span><br><span class="line">        V[key]=[]</span><br><span class="line">        V[key].append(key)</span><br><span class="line">    length = []</span><br><span class="line">    <span class="keyword">while</span> <span class="built_in">len</span>(G) &gt; <span class="number">2</span>:</span><br><span class="line">        v1, v2 = choose_random_key(G) <span class="comment"># 随机选择两个节点</span></span><br><span class="line">        G[v1].extend(G[v2]) <span class="comment"># 合并 v1 和 v2</span></span><br><span class="line">        <span class="comment"># 根据合并调整边的连接</span></span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> G[v2]:</span><br><span class="line">            G[x].remove(v2)</span><br><span class="line">            G[x].append(v1)</span><br><span class="line">        <span class="keyword">while</span> v1 <span class="keyword">in</span> G[v1]:<span class="comment">#去环</span></span><br><span class="line">            G[v1].remove(v1)</span><br><span class="line">        <span class="keyword">del</span> G[v2]</span><br><span class="line">        V[v1].extend(V[v2])</span><br><span class="line">        <span class="keyword">del</span> V[v2]</span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> G.keys(): <span class="comment"># 得到最小割边的数量</span></span><br><span class="line">        length.append(<span class="built_in">len</span>(G[key]))</span><br><span class="line">    <span class="keyword">return</span> length[<span class="number">0</span>],V</span><br><span class="line"></span><br><span class="line">graph=&#123;<span class="number">1</span>:[<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>],</span><br><span class="line">      <span class="number">2</span>:[<span class="number">1</span>,<span class="number">3</span>,<span class="number">4</span>],</span><br><span class="line">      <span class="number">3</span>:[<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>],</span><br><span class="line">      <span class="number">4</span>:[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>],</span><br><span class="line">      <span class="number">5</span>:[<span class="number">3</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>],</span><br><span class="line">      <span class="number">6</span>:[<span class="number">3</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">8</span>],</span><br><span class="line">      <span class="number">7</span>:[<span class="number">5</span>,<span class="number">6</span>,<span class="number">8</span>],</span><br><span class="line">      <span class="number">8</span>:[<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>]&#125;</span><br><span class="line"></span><br><span class="line">currentLen=<span class="number">0</span></span><br><span class="line">currentV=&#123;&#125;</span><br><span class="line">shortestLen=sys.maxsize</span><br><span class="line">shortestV=&#123;&#125;</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">100</span>):</span><br><span class="line">   currentLen,currentV = karger(graph)</span><br><span class="line">   <span class="keyword">if</span> currentLen&lt;shortestLen:</span><br><span class="line">        shortestLen=currentLen</span><br><span class="line">        shortestV=copy.deepcopy(currentV)</span><br><span class="line"></span><br><span class="line">cut_edge=[]</span><br><span class="line">keys=<span class="built_in">list</span>(shortestV.keys())</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> shortestV[keys[<span class="number">0</span>]]:</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> shortestV[keys[<span class="number">1</span>]]:</span><br><span class="line">        <span class="keyword">if</span> j <span class="keyword">in</span> graph[i]:</span><br><span class="line">            cut_edge.append([i,j])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;the shortest length of cut is &#123;&#125;&quot;</span>.<span class="built_in">format</span>(shortestLen))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;the cut edge is &#123;&#125;&quot;</span>.<span class="built_in">format</span>(cut_edge))</span><br></pre></td></tr></table></figure>
+
+<p><strong>结果：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">the shortest length of cut is 2</span><br><span class="line">the cut edge is [[3, 6], [3, 5]]</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、结论"><a href="#四、结论" class="headerlink" title="四、结论"></a>四、结论</h2><p>在本文中我成功地使用Karger算法解决了图的最小割问题，得到了一个图的最小割的边数，并通过一个字典来记录分割后的两个图的顶点信息，以此来得到割的边。同时由于Karger算法是一个随机算法，不能保证单次运行得到最小割，因此我循环多次Karger算法来尽可能地求得最小割。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：使用Karger算法解决最小割问题</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2021-05-06 13:21:58</li>
+        <li>
+            本文链接：http://mufiye.github.io/2021/05/06/使用Karger算法解决最小割问题/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%9C%80%E5%B0%8F%E5%89%B2/">#最小割</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/Karger/">#Karger</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/05/13/n%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">n皇后问题</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/04/15/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%A7%A3%E5%86%B3%E5%8D%95%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">动态规划解决单背包问题</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Karger%E7%AE%97%E6%B3%95%E8%A7%A3%E5%86%B3%E6%9C%80%E5%B0%8F%E5%89%B2%E9%97%AE%E9%A2%98"><span class="nav-text">使用Karger算法解决最小割问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%97%AE%E9%A2%98%E4%BB%8B%E7%BB%8D"><span class="nav-text">一、问题介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%AE%97%E6%B3%95"><span class="nav-text">二、算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">三、代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%93%E8%AE%BA"><span class="nav-text">四、结论</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

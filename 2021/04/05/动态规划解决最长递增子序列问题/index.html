@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            动态规划解决最长递增子序列问题 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">动态规划解决最长递增子序列问题</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-04-05 14:17:47</span>
+        <span class="mobile">2021-04-05 14:17</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%AD%90%E5%BA%8F%E5%88%97/">子序列</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>823 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>3 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="动态规划解决最长递增子序列问题"><a href="#动态规划解决最长递增子序列问题" class="headerlink" title="动态规划解决最长递增子序列问题"></a>动态规划解决最长递增子序列问题</h1><h2 id="一、问题介绍"><a href="#一、问题介绍" class="headerlink" title="一、问题介绍"></a>一、问题介绍</h2><p>首先我来介绍一下什么是最长递增子序列问题，要知道什么是最长递增子序列问题，我们必须先明白一个概念，那就是什么是子序列，所谓子序列，就是将给定序列中零个或多个元素去掉之后得到的序列。那么递增的子序列就是指该序列中的元素数值是随着下标增大逐渐增大的。而其中最长的递增子序列的长度和该子序列就是我们这个问题需要求解的值。</p>
+<h2 id="二、算法"><a href="#二、算法" class="headerlink" title="二、算法"></a>二、算法</h2><p>所谓动态规划就是首先将大问题拆分为小问题，而其最关键的是避免了这些小问题的重复解决，而是保留这个小问题的解下一次直接使用。在使用动态规划时，最关键的就是其中的递推公式。最长递增子序列的递推公式为 $F[i]&#x3D;max(1,F[j]+1) , a_{j}&lt;a_{i} &amp;&amp; j&lt;i$，$F[0]&#x3D;1$，其中$F[0]&#x3D;1$。假设有序列$\lbrace a_{1}, a_{2},…a_{n} \rbrace$，我们用 $F[i]$代表若递增子序列以$a_{i}$结束时它的最长长度，对于$F[0]$我们易知其值为1。那么对于任意一个$F[i]$，我们只需要在下标小于它的元素中找到数值小于它的最大的F值,那么最大的$F[i]$就相当于找到的F值加上1。之后遍历整个序列一遍就能够得到整个序列中每一个元素的以其结尾的最长递增子序列长度，那么我们自然也就得到了整个序列的最长递增子序列长度。同时我通过得到的动态规划表回溯得到其中的一个最长递增子序列。</p>
+<h2 id="三、代码实现"><a href="#三、代码实现" class="headerlink" title="三、代码实现"></a>三、代码实现</h2><p>在代码实现中，我使用了python来实现这一个算法，使用一个字典来记录动态规划表，之后从头遍历序列中的每一个元素，对于每一个元素又要遍历其之前的元素值。最后遍历完成后返回字典中的值的最大值就找到了该序列的最长递增子序列的长度。之后我从字典其中的一个最大值的key开始回溯得到其中的一个最长递增子序列，其中回溯的条件是前面的值小于后面的值且记录F值的longest字典对应的值相差1。</p>
+<p><strong>代码：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">def solveLIS(A):</span><br><span class="line">    result=[]</span><br><span class="line">    longest=&#123;&#125;</span><br><span class="line">    longest[0]=1</span><br><span class="line">    for i in range(1,len(A)):</span><br><span class="line">        maxlen=-1</span><br><span class="line">        for j in range(0,i):</span><br><span class="line">            if A[i]&gt;A[j] and maxlen&lt;longest[j]:</span><br><span class="line">                maxlen = longest[j]</span><br><span class="line">            if maxlen &gt;= 1:</span><br><span class="line">                longest[i]=maxlen+1</span><br><span class="line">            else:</span><br><span class="line">                longest[i]=1 </span><br><span class="line">                </span><br><span class="line">    maxlen = max(longest.values())</span><br><span class="line">    maxkey = 0</span><br><span class="line">    for i in range(len(A)-1,-1,-1):</span><br><span class="line">        if longest[i] == maxlen:</span><br><span class="line">            maxkey = i</span><br><span class="line">            break</span><br><span class="line">    result.append(A[maxkey])</span><br><span class="line">    maxlen=maxlen-1</span><br><span class="line">    for i in range(maxkey-1,-1,-1):</span><br><span class="line">        if result[-1] &gt; A[i] and longest[i] == maxlen:</span><br><span class="line">            maxlen=maxlen-1</span><br><span class="line">            result.append(A[i])</span><br><span class="line">        if maxlen&lt;=0:</span><br><span class="line">            break</span><br><span class="line">    result = result[::-1]</span><br><span class="line">    return max(longest.values()),result</span><br><span class="line"></span><br><span class="line">A=[5,2,8,6,3,6,9,7]</span><br><span class="line">print(solveLIS(A))</span><br><span class="line">B=[3,2,5,6,7,1,8,9]</span><br><span class="line">print(solveLIS(B))</span><br></pre></td></tr></table></figure>
+
+<p><strong>结果：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(4, [2, 3, 6, 7])</span><br><span class="line">(6, [2, 5, 6, 7, 8, 9])</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：动态规划解决最长递增子序列问题</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2021-04-05 14:17:47</li>
+        <li>
+            本文链接：http://mufiye.github.io/2021/04/05/动态规划解决最长递增子序列问题/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">#动态规划</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%AD%90%E5%BA%8F%E5%88%97/">#子序列</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/04/15/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%A7%A3%E5%86%B3%E5%8D%95%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">动态规划解决单背包问题</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/21/%E5%85%B3%E4%BA%8E%E7%A8%B3%E5%AE%9A%E6%80%A7%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A0%94%E7%A9%B6/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">关于稳定性计数排序的研究</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%A7%A3%E5%86%B3%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97%E9%97%AE%E9%A2%98"><span class="nav-text">动态规划解决最长递增子序列问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%97%AE%E9%A2%98%E4%BB%8B%E7%BB%8D"><span class="nav-text">一、问题介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%AE%97%E6%B3%95"><span class="nav-text">二、算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">三、代码实现</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

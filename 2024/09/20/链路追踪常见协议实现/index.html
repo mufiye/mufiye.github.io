@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            链路追踪常见协议实现 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">链路追踪常见协议实现</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2024-09-20 23:21:19</span>
+        <span class="mobile">2024-09-20 23:21</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%8F%AF%E8%A7%82%E6%B5%8B/">可观测</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/skywalking/">skywalking</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/">链路追踪</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%8D%8F%E8%AE%AE/">协议</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/opentelemetry/">opentelemetry</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>3.1k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>16 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="1-Skywalking"><a href="#1-Skywalking" class="headerlink" title="1. Skywalking"></a>1. Skywalking</h1><h2 id="1-1-Segment"><a href="#1-1-Segment" class="headerlink" title="1.1 Segment"></a>1.1 Segment</h2><p>Segment是一批span的集合，它表示一个线程上下文，如果跨线程则需要重新记录为一个segment；跨进程可以表示发起了一个跨线程调用，更多地情况（也是链路追踪最大的意义）是表示了两个服务之间的调用。</p>
+<ul>
+<li>traceId：一条调用链路的唯一id，用其串联起一条链路</li>
+<li>traceSegmentId：一个segment的id</li>
+<li>spans：该segment上下文中所有的span</li>
+<li>service：表示该segment所在的服务</li>
+<li>serviceInstance：表示该segment所在的服务实例（在kubernetes中对应一个pod，服务基本都是多实例部署的）</li>
+<li>isSizeLimited：是否有一些span因为过大被丢弃了</li>
+</ul>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">message </span><span class="title class_">SegmentObject</span> &#123;</span><br><span class="line">    <span class="type">string</span> traceId = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> traceSegmentId = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">repeated</span> SpanObject spans = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> service = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> serviceInstance = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">bool</span> isSizeLimited = <span class="number">6</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-Span"><a href="#1-2-Span" class="headerlink" title="1.2 Span"></a>1.2 Span</h2><p>span是segment下层的概念，它的含义是一个更细粒度的方法调用</p>
+<ul>
+<li><p><strong>spanId</strong>：该span的id，从0开始，在一个segment中保证唯一</p>
+</li>
+<li><p><strong>parentSpanId</strong>：该span在这个segment中的父亲span的id，如果是-1表示没有父亲span，则该span是根span</p>
+</li>
+<li><p><strong>startTime</strong>：开始时间</p>
+</li>
+<li><p><strong>endTime</strong>：结束时间，开始时间和结束时间可以得到耗时信息</p>
+</li>
+<li><p><strong>refs</strong>：如果发生了跨线程&#x2F;进程，记录上个segment的信息；如果是MQ或者批量操作的情况下，会有多个ref</p>
+</li>
+<li><p><strong>operationName</strong>：span的操作名称</p>
+</li>
+<li><p><strong>peer</strong>：如果是exit span，记录要调用的接口或http请求</p>
+</li>
+<li><p><strong>spanType</strong>：</p>
+<ul>
+<li>entry span：一个segment的头部span</li>
+<li>local span：一个segment本地操作的span</li>
+<li>exit span：一个segment的尾部span，标志一个跨线程调用的发起</li>
+</ul>
+</li>
+<li><p><strong>spanLayer</strong>：span所在的服务的类型，rpc，db，cache等</p>
+</li>
+<li><p><strong>componentId</strong>：预定义的id，根据埋点的组件决定，比如spring等</p>
+</li>
+<li><p><strong>isError</strong>：该span是否错误</p>
+</li>
+<li><p><strong>tags</strong>：键值对，给span打标签</p>
+</li>
+<li><p><strong>logs</strong>：记录该span中发生的事件，记录键值对和时间</p>
+</li>
+<li><p><strong>skipAnalysis</strong>：是否跳过分析</p>
+</li>
+</ul>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">message </span><span class="title class_">SpanObject</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int32</span> spanId = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">int32</span> parentSpanId = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">int64</span> startTime = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">int64</span> endTime = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">repeated</span> SegmentReference refs = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> operationName = <span class="number">6</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> peer = <span class="number">7</span>;</span><br><span class="line"></span><br><span class="line">    SpanType spanType = <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line">    SpanLayer spanLayer = <span class="number">9</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">int32</span> componentId = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">bool</span> isError = <span class="number">11</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">repeated</span> KeyStringValuePair tags = <span class="number">12</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">repeated</span> Log logs = <span class="number">13</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">bool</span> skipAnalysis = <span class="number">14</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-1-SpanType"><a href="#1-2-1-SpanType" class="headerlink" title="1.2.1 SpanType"></a>1.2.1 SpanType</h3><figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Map to the type of span</span></span><br><span class="line"><span class="keyword">enum </span><span class="title class_">SpanType</span> &#123;</span><br><span class="line">    <span class="comment">// Server side of RPC. Consumer side of MQ.</span></span><br><span class="line">    Entry = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// Client side of RPC. Producer side of MQ.</span></span><br><span class="line">    Exit = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// A common local code execution.</span></span><br><span class="line">    Local = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-2-SpanLayer"><a href="#1-2-2-SpanLayer" class="headerlink" title="1.2.2 SpanLayer"></a>1.2.2 SpanLayer</h3><figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Map to the layer of span</span></span><br><span class="line"><span class="keyword">enum </span><span class="title class_">SpanLayer</span> &#123;</span><br><span class="line">    <span class="comment">// Unknown layer. Could be anything.</span></span><br><span class="line">    Unknown = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// A database layer, used in tracing the database client component.</span></span><br><span class="line">    Database = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// A RPC layer, used in both client and server sides of RPC component.</span></span><br><span class="line">    RPCFramework = <span class="number">2</span>;</span><br><span class="line">    <span class="comment">// HTTP is a more specific RPCFramework.</span></span><br><span class="line">    Http = <span class="number">3</span>;</span><br><span class="line">    <span class="comment">// A MQ layer, used in both producer and consuer sides of the MQ component.</span></span><br><span class="line">    MQ = <span class="number">4</span>;</span><br><span class="line">    <span class="comment">// A cache layer, used in tracing the cache client component.</span></span><br><span class="line">    Cache = <span class="number">5</span>;</span><br><span class="line">    <span class="comment">// A FAAS layer, used in function-as-a-Service platform.</span></span><br><span class="line">    FAAS = <span class="number">6</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-3-Log"><a href="#1-2-3-Log" class="headerlink" title="1.2.3 Log"></a>1.2.3 Log</h3><figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">message </span><span class="title class_">Log</span> &#123;</span><br><span class="line">    <span class="comment">// The timestamp in milliseconds of this event.,</span></span><br><span class="line">    <span class="comment">// measured between the current time and midnight, January 1, 1970 UTC.</span></span><br><span class="line">    <span class="type">int64</span> time = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// String key, String value pair.</span></span><br><span class="line">    <span class="keyword">repeated</span> KeyStringValuePair data = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-3-Segment-Reference"><a href="#1-3-Segment-Reference" class="headerlink" title="1.3 Segment Reference"></a>1.3 Segment Reference</h2><p>segment reference用于连接两个segment，把他们串起来。使用segment reference可以根据服务侧的entry span方便地生成拓扑，具体拓扑生成的方式可以看wusheng的这篇<a class="link" target="_blank" rel="noopener" href="https://wu-sheng.github.io/STAM/README-cn">STAM分析方法<i class="fas fa-external-link-alt"></i></a>。</p>
+<ul>
+<li><strong>refType</strong>：父亲segment到儿子segment的调用关系，是跨进程还是跨线程</li>
+<li><strong>traceId</strong>：父亲segment的trace id</li>
+<li><strong>parentTraceSegmentId</strong>：父亲segment的segment id</li>
+<li><strong>parentSpanId</strong>：父亲segment的exit span id</li>
+<li><strong>parentService</strong>：父亲segment的服务名称</li>
+<li><strong>parentServiceInstance</strong>：父亲segment的服务实例</li>
+<li><strong>parentEndpoint</strong>：父亲segment的enpoint信息，如果父亲服务是http服务，那么就是一个父亲服务的url；如果父亲服务是rpc服务，那么就是它的服务名+接口。这个也对应父亲segment的entry span的operation name。</li>
+<li><strong>networkAddressUsedAtPeer</strong>：客户端调用服务端，服务端的网络地址；这个等同于exit span的peer</li>
+</ul>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">message </span><span class="title class_">SegmentReference</span> &#123;</span><br><span class="line"></span><br><span class="line">    RefType refType = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> traceId = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> parentTraceSegmentId = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">int32</span> parentSpanId = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> parentService = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> parentServiceInstance = <span class="number">6</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> parentEndpoint = <span class="number">7</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">string</span> networkAddressUsedAtPeer = <span class="number">8</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-OpenTelemetry"><a href="#2-OpenTelemetry" class="headerlink" title="2. OpenTelemetry"></a>2. OpenTelemetry</h1><p>其实总的来说链路追踪的协议设计上都比较接近，但是opentelemetry没有直接的segment的概念</p>
+<h2 id="2-1-一批trace数据的集合"><a href="#2-1-一批trace数据的集合" class="headerlink" title="2.1  一批trace数据的集合"></a>2.1  一批trace数据的集合</h2><figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">message </span><span class="title class_">TracesData</span> &#123;</span><br><span class="line">  <span class="keyword">repeated</span> ResourceSpans resource_spans = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-对应一条trace的概念"><a href="#2-2-对应一条trace的概念" class="headerlink" title="2.2 对应一条trace的概念"></a>2.2 对应一条trace的概念</h2><figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A collection of ScopeSpans from a Resource.</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">ResourceSpans</span> &#123;</span><br><span class="line">  reserved <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The resource for the spans in this message.</span></span><br><span class="line">  <span class="comment">// If this field is not set then no resource info is known.</span></span><br><span class="line">  opentelemetry.proto.resource.v1.Resource resource = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// A list of ScopeSpans that originate from a resource.</span></span><br><span class="line">  <span class="keyword">repeated</span> ScopeSpans scope_spans = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The Schema URL, if known. This is the identifier of the Schema that the resource data</span></span><br><span class="line">  <span class="comment">// is recorded in. To learn more about Schema URL see</span></span><br><span class="line">  <span class="comment">// https://opentelemetry.io/docs/specs/otel/schemas/#schema-url</span></span><br><span class="line">  <span class="comment">// This schema_url applies to the data in the &quot;resource&quot; field. It does not apply</span></span><br><span class="line">  <span class="comment">// to the data in the &quot;scope_spans&quot; field which have their own schema_url field.</span></span><br><span class="line">  <span class="type">string</span> schema_url = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-对应一个segment"><a href="#2-3-对应一个segment" class="headerlink" title="2.3 对应一个segment"></a>2.3 对应一个segment</h2><figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A collection of Spans produced by an InstrumentationScope.</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">ScopeSpans</span> &#123;</span><br><span class="line">  <span class="comment">// The instrumentation scope information for the spans in this message.</span></span><br><span class="line">  <span class="comment">// Semantically when InstrumentationScope isn&#x27;t set, it is equivalent with</span></span><br><span class="line">  <span class="comment">// an empty instrumentation scope name (unknown).</span></span><br><span class="line">  opentelemetry.proto.common.v1.InstrumentationScope scope = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// A list of Spans that originate from an instrumentation scope.</span></span><br><span class="line">  <span class="keyword">repeated</span> Span spans = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The Schema URL, if known. This is the identifier of the Schema that the span data</span></span><br><span class="line">  <span class="comment">// is recorded in. To learn more about Schema URL see</span></span><br><span class="line">  <span class="comment">// https://opentelemetry.io/docs/specs/otel/schemas/#schema-url</span></span><br><span class="line">  <span class="comment">// This schema_url applies to all spans and span events in the &quot;spans&quot; field.</span></span><br><span class="line">  <span class="type">string</span> schema_url = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-4-基本单元，Span"><a href="#2-4-基本单元，Span" class="headerlink" title="2.4 基本单元，Span"></a>2.4 基本单元，Span</h2><ul>
+<li><strong>trace_id</strong></li>
+<li><strong>span_id</strong></li>
+<li><strong>trace_state：它用于在分布式跟踪的环境中传递有关当前 Trace 的数据，可以是键值对的形式组成string</strong></li>
+<li><strong>parent_span_id</strong></li>
+<li><strong>flags：标识位表示该span是否是远程调用</strong></li>
+<li><strong>name</strong></li>
+<li><strong>kind：span的类型，不过使用了server、client、internal、producer、consumer和unspecified</strong></li>
+<li><strong>start_time_unix_nano</strong></li>
+<li><strong>end_time_unix_nano</strong></li>
+<li><strong>attributes：属性键值对，对当前span打了标签</strong></li>
+<li><strong>dropped_attributes_count</strong></li>
+<li><strong>events：更细粒度的事件</strong></li>
+<li><strong>dropped_events_count</strong></li>
+<li><strong>links：用于将span进行串联</strong></li>
+<li><strong>dropped_links_count</strong></li>
+<li><strong>status：span的状态</strong></li>
+</ul>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A Span represents a single operation performed by a single component of the system.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The next available field id is 17.</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">Span</span> &#123;</span><br><span class="line">  <span class="comment">// A unique identifier for a trace. All spans from the same trace share</span></span><br><span class="line">  <span class="comment">// the same `trace_id`. The ID is a 16-byte array. An ID with all zeroes OR</span></span><br><span class="line">  <span class="comment">// of length other than 16 bytes is considered invalid (empty string in OTLP/JSON</span></span><br><span class="line">  <span class="comment">// is zero-length and thus is also invalid).</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// This field is required.</span></span><br><span class="line">  <span class="type">bytes</span> trace_id = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// A unique identifier for a span within a trace, assigned when the span</span></span><br><span class="line">  <span class="comment">// is created. The ID is an 8-byte array. An ID with all zeroes OR of length</span></span><br><span class="line">  <span class="comment">// other than 8 bytes is considered invalid (empty string in OTLP/JSON</span></span><br><span class="line">  <span class="comment">// is zero-length and thus is also invalid).</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// This field is required.</span></span><br><span class="line">  <span class="type">bytes</span> span_id = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// trace_state conveys information about request position in multiple distributed tracing graphs.</span></span><br><span class="line">  <span class="comment">// It is a trace_state in w3c-trace-context format: https://www.w3.org/TR/trace-context/#tracestate-header</span></span><br><span class="line">  <span class="comment">// See also https://github.com/w3c/distributed-tracing for more details about this field.</span></span><br><span class="line">  <span class="type">string</span> trace_state = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The `span_id` of this span&#x27;s parent span. If this is a root span, then this</span></span><br><span class="line">  <span class="comment">// field must be empty. The ID is an 8-byte array.</span></span><br><span class="line">  <span class="type">bytes</span> parent_span_id = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Flags, a bit field.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// Bits 0-7 (8 least significant bits) are the trace flags as defined in W3C Trace</span></span><br><span class="line">  <span class="comment">// Context specification. To read the 8-bit W3C trace flag, use</span></span><br><span class="line">  <span class="comment">// `flags &amp; SPAN_FLAGS_TRACE_FLAGS_MASK`.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// See https://www.w3.org/TR/trace-context-2/#trace-flags for the flag definitions.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// Bits 8 and 9 represent the 3 states of whether a span&#x27;s parent</span></span><br><span class="line">  <span class="comment">// is remote. The states are (unknown, is not remote, is remote).</span></span><br><span class="line">  <span class="comment">// To read whether the value is known, use `(flags &amp; SPAN_FLAGS_CONTEXT_HAS_IS_REMOTE_MASK) != 0`.</span></span><br><span class="line">  <span class="comment">// To read whether the span is remote, use `(flags &amp; SPAN_FLAGS_CONTEXT_IS_REMOTE_MASK) != 0`.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// When creating span messages, if the message is logically forwarded from another source</span></span><br><span class="line">  <span class="comment">// with an equivalent flags fields (i.e., usually another OTLP span message), the field SHOULD</span></span><br><span class="line">  <span class="comment">// be copied as-is. If creating from a source that does not have an equivalent flags field</span></span><br><span class="line">  <span class="comment">// (such as a runtime representation of an OpenTelemetry span), the high 22 bits MUST</span></span><br><span class="line">  <span class="comment">// be set to zero.</span></span><br><span class="line">  <span class="comment">// Readers MUST NOT assume that bits 10-31 (22 most significant bits) will be zero.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// [Optional].</span></span><br><span class="line">  <span class="type">fixed32</span> flags = <span class="number">16</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// A description of the span&#x27;s operation.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// For example, the name can be a qualified method name or a file name</span></span><br><span class="line">  <span class="comment">// and a line number where the operation is called. A best practice is to use</span></span><br><span class="line">  <span class="comment">// the same display name at the same call point in an application.</span></span><br><span class="line">  <span class="comment">// This makes it easier to correlate spans in different traces.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// This field is semantically required to be set to non-empty string.</span></span><br><span class="line">  <span class="comment">// Empty value is equivalent to an unknown span name.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// This field is required.</span></span><br><span class="line">  <span class="type">string</span> name = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Distinguishes between spans generated in a particular context. For example,</span></span><br><span class="line">  <span class="comment">// two spans with the same name may be distinguished using `CLIENT` (caller)</span></span><br><span class="line">  <span class="comment">// and `SERVER` (callee) to identify queueing latency associated with the span.</span></span><br><span class="line">  SpanKind kind = <span class="number">6</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// start_time_unix_nano is the start time of the span. On the client side, this is the time</span></span><br><span class="line">  <span class="comment">// kept by the local machine where the span execution starts. On the server side, this</span></span><br><span class="line">  <span class="comment">// is the time when the server&#x27;s application handler starts running.</span></span><br><span class="line">  <span class="comment">// Value is UNIX Epoch time in nanoseconds since 00:00:00 UTC on 1 January 1970.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// This field is semantically required and it is expected that end_time &gt;= start_time.</span></span><br><span class="line">  <span class="type">fixed64</span> start_time_unix_nano = <span class="number">7</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// end_time_unix_nano is the end time of the span. On the client side, this is the time</span></span><br><span class="line">  <span class="comment">// kept by the local machine where the span execution ends. On the server side, this</span></span><br><span class="line">  <span class="comment">// is the time when the server application handler stops running.</span></span><br><span class="line">  <span class="comment">// Value is UNIX Epoch time in nanoseconds since 00:00:00 UTC on 1 January 1970.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// This field is semantically required and it is expected that end_time &gt;= start_time.</span></span><br><span class="line">  <span class="type">fixed64</span> end_time_unix_nano = <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// attributes is a collection of key/value pairs. Note, global attributes</span></span><br><span class="line">  <span class="comment">// like server name can be set using the resource API. Examples of attributes:</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">//     &quot;/http/user_agent&quot;: &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36&quot;</span></span><br><span class="line">  <span class="comment">//     &quot;/http/server_latency&quot;: 300</span></span><br><span class="line">  <span class="comment">//     &quot;example.com/myattribute&quot;: true</span></span><br><span class="line">  <span class="comment">//     &quot;example.com/score&quot;: 10.239</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// The OpenTelemetry API specification further restricts the allowed value types:</span></span><br><span class="line">  <span class="comment">// https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute</span></span><br><span class="line">  <span class="comment">// Attribute keys MUST be unique (it is not allowed to have more than one</span></span><br><span class="line">  <span class="comment">// attribute with the same key).</span></span><br><span class="line">  <span class="keyword">repeated</span> opentelemetry.proto.common.v1.KeyValue attributes = <span class="number">9</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// dropped_attributes_count is the number of attributes that were discarded. Attributes</span></span><br><span class="line">  <span class="comment">// can be discarded because their keys are too long or because there are too many</span></span><br><span class="line">  <span class="comment">// attributes. If this value is 0, then no attributes were dropped.</span></span><br><span class="line">  <span class="type">uint32</span> dropped_attributes_count = <span class="number">10</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// events is a collection of Event items.</span></span><br><span class="line">  <span class="keyword">repeated</span> Event events = <span class="number">11</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// dropped_events_count is the number of dropped events. If the value is 0, then no</span></span><br><span class="line">  <span class="comment">// events were dropped.</span></span><br><span class="line">  <span class="type">uint32</span> dropped_events_count = <span class="number">12</span>;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// links is a collection of Links, which are references from this span to a span</span></span><br><span class="line">  <span class="comment">// in the same or different trace.</span></span><br><span class="line">  <span class="keyword">repeated</span> Link links = <span class="number">13</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// dropped_links_count is the number of dropped links after the maximum size was</span></span><br><span class="line">  <span class="comment">// enforced. If this value is 0, then no links were dropped.</span></span><br><span class="line">  <span class="type">uint32</span> dropped_links_count = <span class="number">14</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// An optional final status for this span. Semantically when Status isn&#x27;t set, it means</span></span><br><span class="line">  <span class="comment">// span&#x27;s status code is unset, i.e. assume STATUS_CODE_UNSET (code = 0).</span></span><br><span class="line">  Status status = <span class="number">15</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-1-SpanKind"><a href="#2-4-1-SpanKind" class="headerlink" title="2.4.1 SpanKind"></a>2.4.1 SpanKind</h3><p>表示span的类型，不同于skywalking中的entry span、local span和exit span，其使用internal对应了local span，使用server、client表示了调用关系的entry span和exit span，但是其特别标识了不明确类型的span，以及区分出了消费者和生产者的span，对应于MQ的场景。</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SpanKind is the type of span. Can be used to specify additional relationships between spans</span></span><br><span class="line"><span class="comment">// in addition to a parent/child relationship.</span></span><br><span class="line"><span class="keyword">enum </span><span class="title class_">SpanKind</span> &#123;</span><br><span class="line">  <span class="comment">// Unspecified. Do NOT use as default.</span></span><br><span class="line">  <span class="comment">// Implementations MAY assume SpanKind to be INTERNAL when receiving UNSPECIFIED.</span></span><br><span class="line">  SPAN_KIND_UNSPECIFIED = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Indicates that the span represents an internal operation within an application,</span></span><br><span class="line">  <span class="comment">// as opposed to an operation happening at the boundaries. Default value.</span></span><br><span class="line">  SPAN_KIND_INTERNAL = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Indicates that the span covers server-side handling of an RPC or other</span></span><br><span class="line">  <span class="comment">// remote network request.</span></span><br><span class="line">  SPAN_KIND_SERVER = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Indicates that the span describes a request to some remote service.</span></span><br><span class="line">  SPAN_KIND_CLIENT = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Indicates that the span describes a producer sending a message to a broker.</span></span><br><span class="line">  <span class="comment">// Unlike CLIENT and SERVER, there is often no direct critical path latency relationship</span></span><br><span class="line">  <span class="comment">// between producer and consumer spans. A PRODUCER span ends when the message was accepted</span></span><br><span class="line">  <span class="comment">// by the broker while the logical processing of the message might span a much longer time.</span></span><br><span class="line">  SPAN_KIND_PRODUCER = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Indicates that the span describes consumer receiving a message from a broker.</span></span><br><span class="line">  <span class="comment">// Like the PRODUCER kind, there is often no direct critical path latency relationship</span></span><br><span class="line">  <span class="comment">// between producer and consumer spans.</span></span><br><span class="line">  SPAN_KIND_CONSUMER = <span class="number">5</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-2-Event"><a href="#2-4-2-Event" class="headerlink" title="2.4.2 Event"></a>2.4.2 Event</h3><p>是对更细粒度的操作的记录，比如一个Rpc操作可以用Event记录调用下游的ip、zone是什么，以及操作类型等</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Event is a time-stamped annotation of the span, consisting of user-supplied</span></span><br><span class="line"><span class="comment">// text description and key-value pairs.</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">Event</span> &#123;</span><br><span class="line">  <span class="comment">// time_unix_nano is the time the event occurred.</span></span><br><span class="line">  <span class="type">fixed64</span> time_unix_nano = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// name of the event.</span></span><br><span class="line">  <span class="comment">// This field is semantically required to be set to non-empty string.</span></span><br><span class="line">  <span class="type">string</span> name = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// attributes is a collection of attribute key/value pairs on the event.</span></span><br><span class="line">  <span class="comment">// Attribute keys MUST be unique (it is not allowed to have more than one</span></span><br><span class="line">  <span class="comment">// attribute with the same key).</span></span><br><span class="line">  <span class="keyword">repeated</span> opentelemetry.proto.common.v1.KeyValue attributes = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// dropped_attributes_count is the number of dropped attributes. If the value is 0,</span></span><br><span class="line">  <span class="comment">// then no attributes were dropped.</span></span><br><span class="line">  <span class="type">uint32</span> dropped_attributes_count = <span class="number">4</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-3-Link"><a href="#2-4-3-Link" class="headerlink" title="2.4.3 Link"></a>2.4.3 Link</h3><p>相当于skywalking中segment reference的概念，可以将服务等信息存在键值对结构的attributes中，表示了span之间的调用、串联关系</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A pointer from the current span to another span in the same trace or in a</span></span><br><span class="line"><span class="comment">// different trace. For example, this can be used in batching operations,</span></span><br><span class="line"><span class="comment">// where a single batch handler processes multiple requests from different</span></span><br><span class="line"><span class="comment">// traces or when the handler receives a request from a different project.</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">Link</span> &#123;</span><br><span class="line">  <span class="comment">// A unique identifier of a trace that this linked span is part of. The ID is a</span></span><br><span class="line">  <span class="comment">// 16-byte array.</span></span><br><span class="line">  <span class="type">bytes</span> trace_id = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// A unique identifier for the linked span. The ID is an 8-byte array.</span></span><br><span class="line">  <span class="type">bytes</span> span_id = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The trace_state associated with the link.</span></span><br><span class="line">  <span class="type">string</span> trace_state = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">repeated</span> opentelemetry.proto.common.v1.KeyValue attributes = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">uint32</span> dropped_attributes_count = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">fixed32</span> flags = <span class="number">6</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-4-Status"><a href="#2-4-4-Status" class="headerlink" title="2.4.4 Status"></a>2.4.4 Status</h3><p>用于表示Span的状态，skywalking中直接用isError表示为是否是错误的</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">message </span><span class="title class_">Status</span> &#123;</span><br><span class="line">  reserved <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// A developer-facing human readable error message.</span></span><br><span class="line">  <span class="type">string</span> message = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// For the semantics of status codes see</span></span><br><span class="line">  <span class="comment">// https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#set-status</span></span><br><span class="line">  <span class="keyword">enum </span><span class="title class_">StatusCode</span> &#123;</span><br><span class="line">    <span class="comment">// The default status.</span></span><br><span class="line">    STATUS_CODE_UNSET               = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// The Span has been validated by an Application developer or Operator to </span></span><br><span class="line">    <span class="comment">// have completed successfully.</span></span><br><span class="line">    STATUS_CODE_OK                  = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// The Span contains an error.</span></span><br><span class="line">    STATUS_CODE_ERROR               = <span class="number">2</span>;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The status code.</span></span><br><span class="line">  StatusCode code = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-5-Span-Flag"><a href="#2-4-5-Span-Flag" class="headerlink" title="2.4.5 Span Flag"></a>2.4.5 Span Flag</h3><p>标识位表示该span是否是远程调用</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum </span><span class="title class_">SpanFlags</span> &#123;</span><br><span class="line">  <span class="comment">// The zero value for the enum. Should not be used for comparisons.</span></span><br><span class="line">  <span class="comment">// Instead use bitwise &quot;and&quot; with the appropriate mask as shown above.</span></span><br><span class="line">  SPAN_FLAGS_DO_NOT_USE = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Bits 0-7 are used for trace flags.</span></span><br><span class="line">  SPAN_FLAGS_TRACE_FLAGS_MASK = <span class="number">0</span>x000000FF;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Bits 8 and 9 are used to indicate that the parent span or link span is remote.</span></span><br><span class="line">  <span class="comment">// Bit 8 (`HAS_IS_REMOTE`) indicates whether the value is known.</span></span><br><span class="line">  <span class="comment">// Bit 9 (`IS_REMOTE`) indicates whether the span or link is remote.</span></span><br><span class="line">  SPAN_FLAGS_CONTEXT_HAS_IS_REMOTE_MASK = <span class="number">0</span>x00000100;</span><br><span class="line">  SPAN_FLAGS_CONTEXT_IS_REMOTE_MASK = <span class="number">0</span>x00000200;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Bits 10-31 are reserved for future use.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-Xray"><a href="#3-Xray" class="headerlink" title="3. Xray"></a>3. Xray</h1>
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：链路追踪常见协议实现</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2024-09-20 23:21:19</li>
+        <li>
+            本文链接：http://mufiye.github.io/2024/09/20/链路追踪常见协议实现/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/skywalking/">#skywalking</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/">#链路追踪</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%8D%8F%E8%AE%AE/">#协议</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/opentelemetry/">#opentelemetry</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2024/09/21/Prometheus-Histogram%E5%88%86%E4%BD%8D%E7%BA%BF%E8%AE%A1%E7%AE%97/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Prometheus Histogram分位线计算</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2023/03/03/skywalking%E7%9B%91%E6%8E%A7airflow%E5%8A%9F%E8%83%BD%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">skywalking监控airflow功能的设计文档</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Skywalking"><span class="nav-text">1. Skywalking</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Segment"><span class="nav-text">1.1 Segment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Span"><span class="nav-text">1.2 Span</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-SpanType"><span class="nav-text">1.2.1 SpanType</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-SpanLayer"><span class="nav-text">1.2.2 SpanLayer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-Log"><span class="nav-text">1.2.3 Log</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-Segment-Reference"><span class="nav-text">1.3 Segment Reference</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-OpenTelemetry"><span class="nav-text">2. OpenTelemetry</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E4%B8%80%E6%89%B9trace%E6%95%B0%E6%8D%AE%E7%9A%84%E9%9B%86%E5%90%88"><span class="nav-text">2.1  一批trace数据的集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E5%AF%B9%E5%BA%94%E4%B8%80%E6%9D%A1trace%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-text">2.2 对应一条trace的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E5%AF%B9%E5%BA%94%E4%B8%80%E4%B8%AAsegment"><span class="nav-text">2.3 对应一个segment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E5%9F%BA%E6%9C%AC%E5%8D%95%E5%85%83%EF%BC%8CSpan"><span class="nav-text">2.4 基本单元，Span</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-SpanKind"><span class="nav-text">2.4.1 SpanKind</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-Event"><span class="nav-text">2.4.2 Event</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-3-Link"><span class="nav-text">2.4.3 Link</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-4-Status"><span class="nav-text">2.4.4 Status</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-5-Span-Flag"><span class="nav-text">2.4.5 Span Flag</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Xray"><span class="nav-text">3. Xray</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

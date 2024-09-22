@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            CMU15-445笔记8——Sorting&amp;Aggregations |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">CMU15-445笔记8——Sorting&amp;Aggregations</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-08-26 15:38:38</span>
+        <span class="mobile">2022-08-26 15:38</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/CMU-15-445/">CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%AD%98%E5%82%A8/">存储</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E6%8E%92%E5%BA%8F/">排序</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E8%81%9A%E5%90%88/">聚合</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>793 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>3 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="面临的问题："><a href="#面临的问题：" class="headerlink" title="面临的问题："></a>面临的问题：</h1><p>我们设计的这个数据库是基于磁盘的，而实际处理数据需要用到内存，因此我们的算法需要去考虑我们此时想得到的数据可能不在内存中而在磁盘中。</p>
+<h1 id="External-Merge-Sort"><a href="#External-Merge-Sort" class="headerlink" title="External Merge Sort"></a>External Merge Sort</h1><p>外部归并排序。</p>
+<p>排序算法将我们想要排序的数据集分成更小的数据块，称之为runs，然后其对runs单独排序。之后该算法会对runs进行合并得到更大的runs，直到最后整个数据集变为有序的。</p>
+<ul>
+<li>Phase #1：我们会将尽可能多的数据块放入内存，并对它们进行排序，然后将排完序的结果写回磁盘。</li>
+<li>Phase #2：我们会将排完序的runs结合。</li>
+</ul>
+<h2 id="2-way-External-Merge-Sort"><a href="#2-way-External-Merge-Sort" class="headerlink" title="2-way External Merge Sort"></a>2-way External Merge Sort</h2><p>N为page数量。</p>
+<p><strong>number of passes</strong> &#x3D; 1 + $\log_2N$</p>
+<p><strong>total I&#x2F;O cost</strong> &#x3D; 2N·(# of passes)</p>
+<h2 id="Double-Buffering-Optimization"><a href="#Double-Buffering-Optimization" class="headerlink" title="Double Buffering Optimization"></a>Double Buffering Optimization</h2><p>当系统在排序当前的run时，预取下一个要用到的run到另一个buffer中，这样可以减少对于IO请求的等待时间。<br>![2-way external merge sort-0](images&#x2F;2-way external merge sort-0.png)</p>
+<h2 id="General-External-Merge-Sort"><a href="#General-External-Merge-Sort" class="headerlink" title="General External Merge Sort"></a>General External Merge Sort</h2><p><strong>Pass #0</strong></p>
+<ul>
+<li>Use B buffer pages</li>
+<li>Produce $\lceil N&#x2F;B \rceil$ sorted runs of size B</li>
+</ul>
+<p><strong>Pass #1,2,3,…</strong></p>
+<ul>
+<li>Merge B-1 runs，因为有一个buffer pool用来保存输出结果</li>
+</ul>
+<p><strong>Number of passes:</strong> 1+ $\lceil \log_{B-1} \lceil N&#x2F;B \rceil \rceil$</p>
+<p><strong>Total I&#x2F;O cost:</strong> 2N·(# of passes)</p>
+<p>![2-way external merge sort](images&#x2F;2-way external merge sort.png)</p>
+<h2 id="Using-B-tree-for-sorting"><a href="#Using-B-tree-for-sorting" class="headerlink" title="Using B+ tree for sorting"></a>Using B+ tree for sorting</h2><p>如果数据表对于要排序的属性已经拥有一个b+树的索引，那么我们可以直接使用b+树来加速排序，DBMS只需要遍历b+树的叶子节点以此获得按特定顺序排列的tuple。对于b+树索引，有两种情况需要考虑，分别是clustered b+ tree和unclustered b+ tree。对于前者，其叶子节点的tuple按顺序排列在相近的page上，因此io消耗很小，但是对于后者由于不是聚簇索引，读取tuples所需要消耗的io成本过大，因此通常只使用clustered b+ tree。</p>
+<h1 id="Aggregations"><a href="#Aggregations" class="headerlink" title="Aggregations"></a>Aggregations</h1><p>聚合操作就是我们拿到一堆值，然后将它们合并起来生成一个标量值。</p>
+<h2 id="Sorting-Aggregation"><a href="#Sorting-Aggregation" class="headerlink" title="Sorting Aggregation"></a>Sorting Aggregation</h2><p>根据排序更快地去除一些重复值。</p>
+<h2 id="Hashing-Aggregation"><a href="#Hashing-Aggregation" class="headerlink" title="Hashing Aggregation"></a>Hashing Aggregation</h2><p>当对数据表进行扫描时，维护一个临时的hash table（只用于本次查询），对于每一个记录，检查该hash table中是否已经有一个相同key的条目，根据不同的聚合操作（distinct，group by），做不同的处理。</p>
+<h3 id="External-Hashing-Aggregate"><a href="#External-Hashing-Aggregate" class="headerlink" title="External Hashing Aggregate"></a>External Hashing Aggregate</h3><p>hash table所需的内存可能不够，此时就要将部分数据写到磁盘上。对于这种情况，我们为了查询的速度，应当进行相应的处理。</p>
+<h4 id="Phase-1-Partition"><a href="#Phase-1-Partition" class="headerlink" title="Phase #1 - Partition"></a>Phase #1 - Partition</h4><p>首先将数据拆分开到一个个的bucket中（基于hash key），当某个page满时将它们写到磁盘上。</p>
+<p>假设我们拥有B个buffer，我们将使用B-1个buffer用于分区，1个buffer用于输入数据。</p>
+<h4 id="Phase-2-ReHash"><a href="#Phase-2-ReHash" class="headerlink" title="Phase #2 - ReHash"></a>Phase #2 - ReHash</h4><p>对每个分区中的数据重新做hash操作得到一个新的hash table，最后根据hash table得到最终结果。（为什么这样比sorting更高效呢？）</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：CMU15-445笔记8——Sorting&amp;Aggregations</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2022-08-26 15:38:38</li>
+        <li>
+            本文链接：http://mufiye.github.io/2022/08/26/CMU15-445笔记8——Sorting-Aggregations/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/CMU-15-445/">#CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%AD%98%E5%82%A8/">#存储</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%8E%92%E5%BA%8F/">#排序</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E8%81%9A%E5%90%88/">#聚合</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/08/29/CMU15-445%E7%AC%94%E8%AE%B09%E2%80%94%E2%80%94Join-Algorithms/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CMU15-445笔记9——Join Algorithms</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/08/25/CMU15-445%E7%AC%94%E8%AE%B07%E2%80%94%E2%80%94%E5%A4%9A%E7%BA%BF%E7%A8%8B/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CMU15-445笔记7——多线程</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-text">面临的问题：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#External-Merge-Sort"><span class="nav-text">External Merge Sort</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-way-External-Merge-Sort"><span class="nav-text">2-way External Merge Sort</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Double-Buffering-Optimization"><span class="nav-text">Double Buffering Optimization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#General-External-Merge-Sort"><span class="nav-text">General External Merge Sort</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-B-tree-for-sorting"><span class="nav-text">Using B+ tree for sorting</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Aggregations"><span class="nav-text">Aggregations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Sorting-Aggregation"><span class="nav-text">Sorting Aggregation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hashing-Aggregation"><span class="nav-text">Hashing Aggregation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#External-Hashing-Aggregate"><span class="nav-text">External Hashing Aggregate</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Phase-1-Partition"><span class="nav-text">Phase #1 - Partition</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Phase-2-ReHash"><span class="nav-text">Phase #2 - ReHash</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

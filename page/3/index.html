@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class="active"
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class="active"
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="home-content-container fade-in-down-animation">
+    <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/11/26/gdb%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%974/">
+                        gdb入门系列4
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        GDB入门系列4查看运行时数据在你调试程序时，当程序被停住时，你可以使用print命令（简写命令为p），或是同义命令inspect来查看当前程序的运行数据。print命令的格式是：print &#x2F; 。
+一、表达式    print和许多GDB...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Fri Nov 26 2021 13:31:50 GMT+0800">2021-11-26</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/11/26/gdb%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%974/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/11/24/gdb%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%973/">
+                        gdb入门系列3
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        GDB入门系列3查看栈信息概要
+backtrace（缩写为bt）打印当前的函数调用栈的所有信息。
+backtrace   n是一个正整数，表示只打印栈顶上n层的栈信息。
+backtrace &lt;-n&gt;  -n表一个负整数，表示只打印栈底下n...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Wed Nov 24 2021 14:58:48 GMT+0800">2021-11-24</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/11/24/gdb%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%973/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/11/22/gdb%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%972/">
+                        gdb入门系列2
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        GDB入门系列2一、help命令的使用1ubuntu@VM-0-14-ubuntu:~/learn_gdb$ gdb
+1234567891011121314151617181920212223(gdb) helpList of classes of ...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Mon Nov 22 2021 12:58:45 GMT+0800">2021-11-22</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/11/22/gdb%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%972/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/11/21/gdb%E7%89%9B%E5%88%80%E5%B0%8F%E8%AF%95/">
+                        gdb牛刀小试
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        gdb牛刀小试写在前面最近时间很多，我在努力做MIT6.S081这门课的Lab，但是经常会遇到一些让我难以理解并且无从入手的bug，因此愈加萌发了学习gdb的想法。也试着去看gdb的官方文档，但是那个pdf足足有将近900页，总感觉这样看书对于一个新...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Sun Nov 21 2021 12:53:00 GMT+0800">2021-11-21</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/11/21/gdb%E7%89%9B%E5%88%80%E5%B0%8F%E8%AF%95/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/05/28/%E4%BD%BF%E7%94%A8%E5%90%AF%E5%8F%91%E5%BC%8F%E7%AE%97%E6%B3%95%E8%A7%A3%E5%86%B3%E5%A4%9A%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/">
+                        使用启发式算法解决多背包问题
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        使用启发式算法解决多背包问题1. 问题介绍要讲多背包问题，我们先来讲一讲单背包问题。单背包问题是关于如何将将不同的物品放入到一个背包中。这些物品有重量和价值这两个属性，并且背包有容量限制这一个属性。这个单背包问题的目标就是最大化放入背包中物品的总价值...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Fri May 28 2021 22:43:28 GMT+0800">2021-05-28</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/05/28/%E4%BD%BF%E7%94%A8%E5%90%AF%E5%8F%91%E5%BC%8F%E7%AE%97%E6%B3%95%E8%A7%A3%E5%86%B3%E5%A4%9A%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/05/13/n%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/">
+                        n皇后问题
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        n皇后问题一、问题介绍n皇后问题借鉴了国际象棋中皇后的概念，此处我先介绍一下这里的皇后指的是什么。在国际象棋中，在一个棋盘上，皇后可以横着走、竖着走和斜着走。而n皇后问题指的就是，假设有n个皇后，在一张n*n的棋盘上，如何将这些皇后放在这张棋盘上，是...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Thu May 13 2021 11:40:57 GMT+0800">2021-05-13</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/05/13/n%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/05/06/%E4%BD%BF%E7%94%A8Karger%E7%AE%97%E6%B3%95%E8%A7%A3%E5%86%B3%E6%9C%80%E5%B0%8F%E5%89%B2%E9%97%AE%E9%A2%98/">
+                        使用Karger算法解决最小割问题
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        使用Karger算法解决最小割问题一、问题介绍把图 G&#x3D;(V, E) 的节点 V 分割成两个部分 S 和 S-V 的边的集合称为割，而最小割问题就是输⼊是⽆向图 G，求解把图 G 分割成两个部分的边数最⼩的割。而随机算法是指该算法中使用了随...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Thu May 06 2021 13:21:58 GMT+0800">2021-05-06</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/05/06/%E4%BD%BF%E7%94%A8Karger%E7%AE%97%E6%B3%95%E8%A7%A3%E5%86%B3%E6%9C%80%E5%B0%8F%E5%89%B2%E9%97%AE%E9%A2%98/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/04/15/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%A7%A3%E5%86%B3%E5%8D%95%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/">
+                        动态规划解决单背包问题
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        动态规划解决单背包问题一、问题介绍单背包问题是指给定一个背包，一些物品，这个背包有承重上限这个属性，而这些物品有重量和价值这两个属性，而这个问题要求解得到的是一个放置物品的策略，要求背包中所放物品的价值总和尽可能的大，但是这个物品的重量总和不能超过背...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Thu Apr 15 2021 14:34:42 GMT+0800">2021-04-15</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/04/15/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%A7%A3%E5%86%B3%E5%8D%95%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/04/05/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%A7%A3%E5%86%B3%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97%E9%97%AE%E9%A2%98/">
+                        动态规划解决最长递增子序列问题
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        动态规划解决最长递增子序列问题一、问题介绍首先我来介绍一下什么是最长递增子序列问题，要知道什么是最长递增子序列问题，我们必须先明白一个概念，那就是什么是子序列，所谓子序列，就是将给定序列中零个或多个元素去掉之后得到的序列。那么递增的子序列就是指该序列...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Mon Apr 05 2021 14:17:47 GMT+0800">2021-04-05</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/04/05/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%A7%A3%E5%86%B3%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97%E9%97%AE%E9%A2%98/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2021/03/21/%E5%85%B3%E4%BA%8E%E7%A8%B3%E5%AE%9A%E6%80%A7%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A0%94%E7%A9%B6/">
+                        关于稳定性计数排序的研究
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        关于稳定性计数排序的研究一、介绍我们一开始接触的排序算法大都是如冒泡排序、插入排序和选择排序这类的基于比较的排序算法，这类基于比较的排序算法的时间复杂度限制在了$O(nlogn)$。那么有没有时间复杂度更优的排序算法呢，当然是有的，有这么一些算法不需...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Sun Mar 21 2021 19:31:39 GMT+0800">2021-03-21</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2021/03/21/%E5%85%B3%E4%BA%8E%E7%A8%B3%E5%AE%9A%E6%80%A7%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A0%94%E7%A9%B6/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+    </ul>
+
+    <div class="home-paginator">
+        <div class="paginator">
+    
+        <a class="prev btn"
+           href="/page/2/"
+        >上一页</a>
+    
+
+    
+        <a class="next btn"
+           href="/page/4/"
+        >下一页</a>
+    
+</div>
+
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

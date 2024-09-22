@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            CMU15-445笔记3——Database Storage |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">CMU15-445笔记3——Database Storage</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-06-02 19:35:54</span>
+        <span class="mobile">2022-06-02 19:35</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/CMU-15-445/">CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%AD%98%E5%82%A8/">存储</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>3.4k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>12 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="1-数据库系统设计"><a href="#1-数据库系统设计" class="headerlink" title="1. 数据库系统设计"></a>1. 数据库系统设计</h1><p><strong>数据库系统设计目标：</strong>给应用程序一个错觉，即我们能提供足够的内存将整个数据库存入内存中。</p>
+<h2 id="1-1-整体的设计架构："><a href="#1-1-整体的设计架构：" class="headerlink" title="1.1 整体的设计架构："></a>1.1 整体的设计架构：</h2><p><img src="/images/database-storage-arch.png" alt="database-storage-arch"></p>
+<center>图1：简单数据库的整体架构</center>
+
+<p>在硬盘中有数据库文件，其由目录和页（也可以说是块）组成；在内存中有一个缓存池，用来缓存数据库文件中的页。当一个运行引擎（查询引擎、执行引擎等）需要得到page 2中的内容，它会向缓冲池发送请求，如果page 2不在缓存池（内存）中，其会在硬盘的page目录中查找page，并将其读取到缓存池中，最后将数据交给运行引擎，运行引擎会对读取到的数据进行相应的操作。</p>
+<h2 id="1-2-Why-Buffer-Pool"><a href="#1-2-Why-Buffer-Pool" class="headerlink" title="1.2 Why Buffer Pool"></a>1.2 Why Buffer Pool</h2><p>为什么不依赖操作系统去管理内存，而要额外写一个buffer pool去管理内存呢？用户程序可以使用mmap系统调用让操作系统将文件页面映射到进程的地址空间中，其可以读写该内存页中的内容，操作系统会控制该内存内容，将更改内容写回到硬盘文件中。通过这种方式，操作系统控制了硬盘文件数据在内存中的缓存。</p>
+<p>但这会导致一些性能瓶颈，因为操作系统只是从操作系统的层面去考虑控制文件数据在内存中的缓存（如果内存满了，需要换出换入页，那么极有可能换出从DBMS层面来看不该换出的页）。虽然DBMS可以使用madvise告诉操作系统如何访问某些页面（顺序读取还是随即读取），可以使用mlock阻止pages被回收，可以使用msync告诉操作系统要将数据刷出到磁盘中。但是这样仍然可能会遇到性能瓶颈。所以我们要尽可能避免使用操作系统来管理这部分内存，而将这部分工作交给DBMS。</p>
+<p>从发展现状来看，大多数主流的数据库比如MySQL、Oracle、DB2以及SQL server都没有使用mmap。当然也有一部分数据库使用了或者部分使用了mmap，前者有levelDB、elasticsearch，后者有SQLite、mongoDB。</p>
+<h1 id="2-数据库存储——Problem-1"><a href="#2-数据库存储——Problem-1" class="headerlink" title="2. 数据库存储——Problem 1"></a>2. 数据库存储——Problem 1</h1><p>数据库存储主要关注两个问题，问题1是DBMS如何表示磁盘中文件的数据。</p>
+<h2 id="2-1-File-Storage"><a href="#2-1-File-Storage" class="headerlink" title="2.1 File Storage"></a>2.1 File Storage</h2><p>数据库可能将数据存储在一个或多个文件中，其所依赖的文件系统有可能是基于操作系统自带的一些文件系统或者是自己构建的。</p>
+<h3 id="2-1-1-Storage-Manager-存储管理器，存储引擎"><a href="#2-1-1-Storage-Manager-存储管理器，存储引擎" class="headerlink" title="2.1.1 Storage Manager(存储管理器，存储引擎)"></a>2.1.1 Storage Manager(存储管理器，存储引擎)</h3><p>数据库系统的一个组件，负责维护在磁盘上的数据库文件。</p>
+<h3 id="2-1-2-Database-Pages"><a href="#2-1-2-Database-Pages" class="headerlink" title="2.1.2 Database Pages"></a>2.1.2 Database Pages</h3><ul>
+<li>page里面的内容可以是元组、元数据、索引或者日志，分开存储不同类型的数据是一个好的方法（大多数系统都是这样做的，称为self-contained page）。</li>
+<li>每一个page都有一个独一无二的id号，利用id号可以索引到该页的物理位置（使用一个indirection layer）。</li>
+</ul>
+<p>三种不同的page概念：</p>
+<ul>
+<li>Hardware Page（usually 4KB）：存储在持久化设备上的数据块（执行原子性读写的最小单位）</li>
+<li>OS Page（usually 4KB）：被操作系统读取，存在内存中的数据页</li>
+<li>Database Page（512B - 16KB）：DBMS处理的page，如果Database Page的大小大于Hardware Page的大小不一样，在读写发生异常时可能会出现问题，比如16KB的Database Page刚写了8KB到持久化设备中，这时设备宕机了，那么剩下的8KB还没有写完，而当读取数据库数据时，实际上已经有一部分数据被修改了，这就需要一些操作来保证数据一致性。而使用更大的Database Page的好处是更大的页大小可以使索引表中（类似TLB）的page id数更少（在总数据量相同的情况下），这可以使读取page位置的操作更加快速。</li>
+</ul>
+<h3 id="2-1-3-Page-Storage-Architecture"><a href="#2-1-3-Page-Storage-Architecture" class="headerlink" title="2.1.3 Page Storage Architecture"></a>2.1.3 Page Storage Architecture</h3><p>不同的DBMS使用不同的方式管理数据库文件中的页。关注的是页的组织形式，而不是页中的内容。</p>
+<h4 id="1）Heap-File-Organization"><a href="#1）Heap-File-Organization" class="headerlink" title="1）Heap File Organization"></a>1）Heap File Organization</h4><p>heap file是一个无序的page集合，可以以随机的顺序把tuple保存在里面。（关系模型没有任何排序，如果一个接一个地插入tuple，不能保证它们是按照插入的顺序保存在磁盘上的。）这种架构还需要元数据去跟踪记录被使用的page和空闲的page。</p>
+<p>heap file有两种实现方法：</p>
+<h5 id="实现方式1-Linked-List（bad-idea）"><a href="#实现方式1-Linked-List（bad-idea）" class="headerlink" title="实现方式1: Linked List（bad idea）"></a>实现方式1: Linked List（bad idea）</h5><p>在heap file的header中，用两个指针来分别指向空余page列表和被数据占据的page列表。当我想要插入数据时，我可以循环扫描查看每一个page，知道找到有足够空余空间的page为止。</p>
+<h5 id="实现方式2-Page-Directory"><a href="#实现方式2-Page-Directory" class="headerlink" title="实现方式2: Page Directory"></a>实现方式2: Page Directory</h5><p>在heap file的header有一个目录维护了page id和它们所处位置的映射关系，同时这个目录维护着某些额外的元数据。</p>
+<h4 id="2）Sequential-x2F-Sorted-File-Organization"><a href="#2）Sequential-x2F-Sorted-File-Organization" class="headerlink" title="2）Sequential&#x2F;Sorted File Organization"></a>2）Sequential&#x2F;Sorted File Organization</h4><p>没讲</p>
+<h4 id="3）Hashing-File-Organization"><a href="#3）Hashing-File-Organization" class="headerlink" title="3）Hashing File Organization"></a>3）Hashing File Organization</h4><p>没讲</p>
+<h2 id="2-2-Page-Layout"><a href="#2-2-Page-Layout" class="headerlink" title="2.2 Page Layout"></a>2.2 Page Layout</h2><p>page layout是指如何组织储存在page中的数据。</p>
+<h3 id="2-2-1-Page-Header"><a href="#2-2-1-Page-Header" class="headerlink" title="2.2.1 Page Header"></a>2.2.1 Page Header</h3><ul>
+<li>Page Size</li>
+<li>Checksum</li>
+<li>DBMS version</li>
+<li>Transaction Visibility</li>
+<li>Compression Information</li>
+</ul>
+<h3 id="2-2-2-Tuple-oriented"><a href="#2-2-2-Tuple-oriented" class="headerlink" title="2.2.2 Tuple-oriented"></a>2.2.2 Tuple-oriented</h3><h4 id="1）a-strawman-idea"><a href="#1）a-strawman-idea" class="headerlink" title="1）a strawman idea"></a>1）a strawman idea</h4><p>在一个已有的tuple后面再接着插入一个新的tuple，同时更新header中记录的page中tuple的数量。</p>
+<p>缺点：删除后很容易产生外部碎片，同时维护header中的数据过于频繁。</p>
+<h4 id="2）Slotted-Pages"><a href="#2）Slotted-Pages" class="headerlink" title="2）Slotted Pages"></a>2）Slotted Pages</h4><p>这是常用的scheme。使用该方法存储数据，在头部除了存储元数据还要存储slot array，在尾部存储我们想要保存的tuple。Slot array将一个特定的slot映射到page上的某个偏移量上，根据这个偏移量，DBMS可以得到想要获取的那个tuple。（也有可能会产生空隙，DBMS可以压缩page中的空间。）</p>
+<p><img src="/images/slotted-pages.png" alt="slotted-pages"></p>
+<center>图2：one slotted page</center>
+
+<p>每一个tuple可以用一个record id来唯一标识，最常用的record id为page id + slot offset。</p>
+<h3 id="2-2-3-Log-structured"><a href="#2-2-3-Log-structured" class="headerlink" title="2.2.3 Log-structured"></a>2.2.3 Log-structured</h3><p>该方法并不是把所有的tuple都存放到page中，而是去存储如何创建tuple以及如何修改tuple的相关信息（也就是日志记录）。（这其实和LFS这个文件系统思路一致。）</p>
+<p>优点：</p>
+<ol>
+<li>考虑了存储介质上顺序读写与随机读写的区别（这种结构有利于顺序读写）</li>
+<li>有利于回滚</li>
+</ol>
+<p>缺点：当读取数据时需要读取一堆记录来得到数据。</p>
+<h2 id="2-3-Tuple-Layout"><a href="#2-3-Tuple-Layout" class="headerlink" title="2.3 Tuple Layout"></a>2.3 Tuple Layout</h2><p>tuple其实就是一个字节序列。</p>
+<h3 id="2-3-1-Tuple-Header"><a href="#2-3-1-Tuple-Header" class="headerlink" title="2.3.1 Tuple Header"></a>2.3.1 Tuple Header</h3><p>每个tuple前面都有一个包含元数据的header，我们可以通过一个header来追踪一些不同的东西，例如哪一个事务查询修改了这个tuple，以及对于空值的bitmap。但是通常我们不会将数据类型元数据保存在每个tuple中，而是会保存在tuple所在的page中，或者是另外的catalog page中（假设同一个表的tuple会在同一个page中）。</p>
+<h3 id="2-3-2-Tuple-Data"><a href="#2-3-2-Tuple-Data" class="headerlink" title="2.3.2 Tuple Data"></a>2.3.2 Tuple Data</h3><p>关于tuple data的存储顺序，通常是根据创建表的时候类型的顺序来存储的。（对于内存型数据库，可能需要重新排序以此来保证字节对齐）</p>
+<h3 id="2-3-3-Denormalized-Tuple-Data"><a href="#2-3-3-Denormalized-Tuple-Data" class="headerlink" title="2.3.3 Denormalized Tuple Data"></a>2.3.3 Denormalized Tuple Data</h3><p>反范式化（范式化是尽可能地将一个表进行拆解，使其耦合性降低，反范式化是其反面）相关联的tuple，将它们存储在同一个page中。</p>
+<ul>
+<li>潜在地减少常见工作负载模式的IO量（因为只需要读一个page了）</li>
+<li>使更新数据变得昂贵的（数据量变大了）</li>
+</ul>
+<h1 id="3-数据库存储——Problem-2"><a href="#3-数据库存储——Problem-2" class="headerlink" title="3. 数据库存储——Problem 2"></a>3. 数据库存储——Problem 2</h1><p>数据库存储关注的第二个问题是我们实际该如何管理内存以及在硬盘间来回移动数据。</p>
+<p>我们主要考虑的是面向磁盘的架构设计，这种DBMS假设首要的存储位置是在非易失性存储上。DBMS的组件管理着数据从非易失性存储（磁盘）移动到易失性存储（内存）上。</p>
+<h2 id="3-1-Data-Representation"><a href="#3-1-Data-Representation" class="headerlink" title="3.1 Data Representation"></a>3.1 Data Representation</h2><h3 id="3-1-1-Storage-of-different-data-type"><a href="#3-1-1-Storage-of-different-data-type" class="headerlink" title="3.1.1 Storage of different data type"></a>3.1.1 Storage of different data type</h3><p><img src="/images/data-representation.png" alt="data-representation"></p>
+<center>图3：数据表示</center>
+
+<ul>
+<li>variable-precision number（IEEE-754标准）：处理速度更快，但是有取舍的误差。</li>
+<li>fixed point decimal number：固定精度数字，利用元数据来存储确切的二进制表示（哪里是小数点，哪里是精度范围，哪里是四舍五入信息）。</li>
+</ul>
+<h3 id="3-1-2-Store-Large-Values"><a href="#3-1-2-Store-Large-Values" class="headerlink" title="3.1.2  Store Large Values"></a>3.1.2  Store Large Values</h3><h4 id="1）Overflow-Page"><a href="#1）Overflow-Page" class="headerlink" title="1）Overflow Page"></a>1）Overflow Page</h4><p>如何存储size比一页要大的值。DBMS可以使用额外的overflow page来存储这些页。如果一个tuple中有一个size比page size要大的值，该值会放在overflow page中，而该tuple中在该值的位置会存放一个指向overflow page中该值的指针（overflow page的page id + slot id）。</p>
+<p><img src="/images/overflow-page.png" alt="overflow-page"><br>如果该overflow page也无法存放该值，其会类似地将该值存放到其它page中，该overflow page存放指向那个位置的指针（和前面一样，也是个record id)。</p>
+<h4 id="2）External-value-storage"><a href="#2）External-value-storage" class="headerlink" title="2）External value storage"></a>2）External value storage</h4><p>还有另一种方法，就是将大数据存放到外部文件中，而在tuple中的对应位置保存一个指针或者是一个文件路径指向能找到该数据的本地磁盘、网络存储或者是外部存储设备。但是DBMS没有办法修改外部文件的数据，没有一致性保护和事务保护。（可以用该方法存放视频文件等大数据，考虑性能和经济效益。）</p>
+<h2 id="3-2-System-Catalogs"><a href="#3-2-System-Catalogs" class="headerlink" title="3.2 System Catalogs"></a>3.2 System Catalogs</h2><p>DBMS在目录中存放了关于数据库的元数据。很多DBMS都会将它们的catalog用另一张表来保存。在SQL标准中，使用INFORMATION_SCHEMA来访问该元数据。</p>
+<ul>
+<li>表名，索引，视图</li>
+<li>用户以及其权限</li>
+<li>内部统计数据</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># PostgreSQL</span><br><span class="line">\d</span><br><span class="line">\d<span class="operator">+</span> $&#123;tableName&#125;</span><br><span class="line"># mysql</span><br><span class="line"><span class="keyword">show</span> tables;</span><br><span class="line"><span class="keyword">show</span> databases;</span><br><span class="line"><span class="keyword">describe</span> $&#123;tableName&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-Storage-Models"><a href="#3-3-Storage-Models" class="headerlink" title="3.3 Storage Models"></a>3.3 Storage Models</h2><h3 id="3-3-1-Workload"><a href="#3-3-1-Workload" class="headerlink" title="3.3.1 Workload"></a>3.3.1 Workload</h3><h4 id="1）OLTP"><a href="#1）OLTP" class="headerlink" title="1）OLTP"></a>1）OLTP</h4><p>OLTP是指On-line Transaction Processing，联机事务处理。联机事务处理是指读&#x2F;更新一小部分关联到数据库中条目的数据。</p>
+<h4 id="2）OLAP"><a href="#2）OLAP" class="headerlink" title="2）OLAP"></a>2）OLAP</h4><p>OLAP是指On-line Analytical Processing，联机分析处理。联机分析处理是指从收集到一大堆数据后，分析它们并且推断出新的信息。</p>
+<h4 id="3）HTAP"><a href="#3）HTAP" class="headerlink" title="3）HTAP"></a>3）HTAP</h4><p>HTAP是指hyper transaction analytical processing混合事务分析处理，它混合了OLTP和OLAP。</p>
+<h4 id="Q-SQL-NoSQL-newSQL"><a href="#Q-SQL-NoSQL-newSQL" class="headerlink" title="Q: SQL, NoSQL, newSQL"></a>Q: SQL, NoSQL, newSQL</h4><h3 id="3-3-2-N-Ary-Storage-Model（NSM）"><a href="#3-3-2-N-Ary-Storage-Model（NSM）" class="headerlink" title="3.3.2 N-Ary Storage Model（NSM）"></a>3.3.2 N-Ary Storage Model（NSM）</h3><p>行存储，其基本思路是将单个tuple中的所有属性取出，并将它们连续地存储在我们的page中，这样我们取数据就可以以一行为粒度连续地读取。这种存储方式比较适用于OLTP这种workload，因为其通常只需要读&#x2F;更新一小部分数据（这些数据在行存储的page中通常是连续的）。</p>
+<p><strong>优点：</strong>当我们访问整个tuple时，插入、更新以及删除数据时的速度很快。（针对的是想要获取单个或者多个tuple的全部属性）</p>
+<p><strong>缺点：</strong>做OLAP工作的性能很糟糕，因为这通常需要去扫描整张表中的大部分内容。</p>
+<h3 id="3-3-3-Decomposition-Storage-Model（DSM）"><a href="#3-3-3-Decomposition-Storage-Model（DSM）" class="headerlink" title="3.3.3 Decomposition Storage Model（DSM）"></a>3.3.3 Decomposition Storage Model（DSM）</h3><p>列存储，将单个列（单种属性）所有值连续地保存在一起。每个page对应于一种属性。列存储的数据可以进行压缩，以此让一个page可以存储更多的数据？</p>
+<p><strong>优点：</strong>适合做OLAP，相较于行存储其做OLAP无效的IO做得更少。更有利于查询处理和数据压缩。</p>
+<p><strong>缺点：</strong>对于查询、插入、更新和删除一个tuple的操作，处理速度很慢。</p>
+<h4 id="1）Tuple-Identification"><a href="#1）Tuple-Identification" class="headerlink" title="1）Tuple Identification"></a>1）Tuple Identification</h4><p>如何从一个page中找到一个匹配项。</p>
+<h5 id="Fixed-length-Offsets"><a href="#Fixed-length-Offsets" class="headerlink" title="Fixed-length Offsets"></a>Fixed-length Offsets</h5><p>使用固定长度的偏移值。对于一列中的每个值来说，它们的长度始终是固定的（利用填充或者压缩属性值使其长度为统一长度）。offset * value size得到匹配项的位置。</p>
+<h5 id="Embedded-Tuple-Ids（废弃）"><a href="#Embedded-Tuple-Ids（废弃）" class="headerlink" title="Embedded Tuple Ids（废弃）"></a>Embedded Tuple Ids（废弃）</h5><p>每一个值与其tuple id一起存储，我们通过一个map来查找这个匹配项。</p>
+<h3 id="3-3-4-Bifurcated-Environment"><a href="#3-3-4-Bifurcated-Environment" class="headerlink" title="3.3.4 Bifurcated Environment"></a>3.3.4 Bifurcated Environment</h3><ul>
+<li>OLTP Data Silos（数据孤岛）</li>
+<li>OLAP Data Warehouse（数据仓库）</li>
+</ul>
+<h4 id="1）OLTP-OLAP"><a href="#1）OLTP-OLAP" class="headerlink" title="1）OLTP + OLAP"></a>1）OLTP + OLAP</h4><p><img src="/images/OLTP-with-OLAP.png" alt="OLTP-with-OLAP"></p>
+<p>在每个数据孤岛上做OLTP，然后就可以进行被称为ETL的操作，该操作是指从前端数据库中取出数据，将数据进行清洗处理，接着将处理后的数据传入到后端的数据仓库。之后在后端的数据仓库进行OLAP，后端数据仓库可以将分析得到的结果存入到前端的数据孤岛上。</p>
+<h4 id="2）HTAP"><a href="#2）HTAP" class="headerlink" title="2）HTAP"></a>2）HTAP</h4><p><img src="/images/HATP.png" alt="HATP"></p>
+<p>HATP在前端的数据孤岛上既做OLTP，也做OLAP。</p>
+<h3 id="3-3-5-Conclusion"><a href="#3-3-5-Conclusion" class="headerlink" title="3.3.5 Conclusion"></a>3.3.5 Conclusion</h3><p>对症下药，混合是一个bad idea。</p>
+<ul>
+<li><p>OLTP &#x3D; Row Store</p>
+</li>
+<li><p>OLAP &#x3D; Column Store</p>
+</li>
+</ul>
+<h2 id="3-4-Some-Think"><a href="#3-4-Some-Think" class="headerlink" title="3.4 Some Think"></a>3.4 Some Think</h2><p>想要最小化在磁盘上执行查询速度缓慢带来的影响。</p>
+<h3 id="3-4-1-Spatial-Control"><a href="#3-4-1-Spatial-Control" class="headerlink" title="3.4.1 Spatial Control"></a>3.4.1 Spatial Control</h3><p>Spatial Control是指我们实际将数据写入到了磁盘的哪里，我们应当尽可能地使要一起用的page在磁盘上的物理位置接近。</p>
+<h3 id="3-4-2-Temporal-Control"><a href="#3-4-2-Temporal-Control" class="headerlink" title="3.4.2 Temporal Control"></a>3.4.2 Temporal Control</h3><p>Temporal Control是指什么时候将数据读到内存之中，并且如果它们被修改了，我们什么时候将其回写到磁盘之中。其目标是减少我们必须要从磁盘中读取数据的次数。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：CMU15-445笔记3——Database Storage</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2022-06-02 19:35:54</li>
+        <li>
+            本文链接：http://mufiye.github.io/2022/06/02/CMU15-445笔记3——Database-Storage/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/CMU-15-445/">#CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%AD%98%E5%82%A8/">#存储</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/06/03/MIT6-824%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94Introduction/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">MIT6.824笔记1——Introduction</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/06/02/CMU15-445%E7%AC%94%E8%AE%B02%E2%80%94%E2%80%94Advanced-SQL/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CMU15-445笔记2——Advanced SQL</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1"><span class="nav-text">1. 数据库系统设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E6%95%B4%E4%BD%93%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%9E%B6%E6%9E%84%EF%BC%9A"><span class="nav-text">1.1 整体的设计架构：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Why-Buffer-Pool"><span class="nav-text">1.2 Why Buffer Pool</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AD%98%E5%82%A8%E2%80%94%E2%80%94Problem-1"><span class="nav-text">2. 数据库存储——Problem 1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-File-Storage"><span class="nav-text">2.1 File Storage</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-Storage-Manager-%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E5%99%A8%EF%BC%8C%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">2.1.1 Storage Manager(存储管理器，存储引擎)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-Database-Pages"><span class="nav-text">2.1.2 Database Pages</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-Page-Storage-Architecture"><span class="nav-text">2.1.3 Page Storage Architecture</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89Heap-File-Organization"><span class="nav-text">1）Heap File Organization</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F1-Linked-List%EF%BC%88bad-idea%EF%BC%89"><span class="nav-text">实现方式1: Linked List（bad idea）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F2-Page-Directory"><span class="nav-text">实现方式2: Page Directory</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%EF%BC%89Sequential-x2F-Sorted-File-Organization"><span class="nav-text">2）Sequential&#x2F;Sorted File Organization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%EF%BC%89Hashing-File-Organization"><span class="nav-text">3）Hashing File Organization</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Page-Layout"><span class="nav-text">2.2 Page Layout</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-Page-Header"><span class="nav-text">2.2.1 Page Header</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-Tuple-oriented"><span class="nav-text">2.2.2 Tuple-oriented</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89a-strawman-idea"><span class="nav-text">1）a strawman idea</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%EF%BC%89Slotted-Pages"><span class="nav-text">2）Slotted Pages</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-Log-structured"><span class="nav-text">2.2.3 Log-structured</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Tuple-Layout"><span class="nav-text">2.3 Tuple Layout</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-Tuple-Header"><span class="nav-text">2.3.1 Tuple Header</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-Tuple-Data"><span class="nav-text">2.3.2 Tuple Data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-Denormalized-Tuple-Data"><span class="nav-text">2.3.3 Denormalized Tuple Data</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AD%98%E5%82%A8%E2%80%94%E2%80%94Problem-2"><span class="nav-text">3. 数据库存储——Problem 2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Data-Representation"><span class="nav-text">3.1 Data Representation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-Storage-of-different-data-type"><span class="nav-text">3.1.1 Storage of different data type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-Store-Large-Values"><span class="nav-text">3.1.2  Store Large Values</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89Overflow-Page"><span class="nav-text">1）Overflow Page</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%EF%BC%89External-value-storage"><span class="nav-text">2）External value storage</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-System-Catalogs"><span class="nav-text">3.2 System Catalogs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Storage-Models"><span class="nav-text">3.3 Storage Models</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-Workload"><span class="nav-text">3.3.1 Workload</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89OLTP"><span class="nav-text">1）OLTP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%EF%BC%89OLAP"><span class="nav-text">2）OLAP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%EF%BC%89HTAP"><span class="nav-text">3）HTAP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Q-SQL-NoSQL-newSQL"><span class="nav-text">Q: SQL, NoSQL, newSQL</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-N-Ary-Storage-Model%EF%BC%88NSM%EF%BC%89"><span class="nav-text">3.3.2 N-Ary Storage Model（NSM）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-3-Decomposition-Storage-Model%EF%BC%88DSM%EF%BC%89"><span class="nav-text">3.3.3 Decomposition Storage Model（DSM）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89Tuple-Identification"><span class="nav-text">1）Tuple Identification</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Fixed-length-Offsets"><span class="nav-text">Fixed-length Offsets</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Embedded-Tuple-Ids%EF%BC%88%E5%BA%9F%E5%BC%83%EF%BC%89"><span class="nav-text">Embedded Tuple Ids（废弃）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-4-Bifurcated-Environment"><span class="nav-text">3.3.4 Bifurcated Environment</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89OLTP-OLAP"><span class="nav-text">1）OLTP + OLAP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%EF%BC%89HTAP"><span class="nav-text">2）HTAP</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-5-Conclusion"><span class="nav-text">3.3.5 Conclusion</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Some-Think"><span class="nav-text">3.4 Some Think</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-1-Spatial-Control"><span class="nav-text">3.4.1 Spatial Control</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-2-Temporal-Control"><span class="nav-text">3.4.2 Temporal Control</span></a></li></ol></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class="active"
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class="active"
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="home-content-container fade-in-down-animation">
+    <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2024/09/22/CAT%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+                        CAT源码解析
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        CAT是大众点评开源的监控项目，这是它的整体架构图，接下来我将从CAT Client、CAT Consumer两部分做源码解析，帮助你了解CAT的原理。
+
+一、CAT ClientCAT使用API的形式进行埋点，暴露给外部的方法都在CAT这个类中。其...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Sun Sep 22 2024 21:11:56 GMT+0800">2024-09-22</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E5%8F%AF%E8%A7%82%E6%B5%8B/">可观测</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2024/09/22/CAT%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2024/09/22/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%E9%87%87%E6%A0%B7%E7%AD%96%E7%95%A5/">
+                        链路追踪采样策略
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        链路追踪数据量大，如果全采样不仅对于客户端的IO负担很大，而且对于采集侧的内存、IO压力巨大，因此需要采样策略来决定哪些链路数据需要采样，哪些不需要。本篇文章介绍了一些常见的链路追踪采样策略及其在业界的实现方式。
+概率采样概率采样是指只采集某一个概率...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Sun Sep 22 2024 13:58:12 GMT+0800">2024-09-22</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E5%8F%AF%E8%A7%82%E6%B5%8B/">可观测</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2024/09/22/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%E9%87%87%E6%A0%B7%E7%AD%96%E7%95%A5/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2024/09/21/Prometheus-Histogram%E5%88%86%E4%BD%8D%E7%BA%BF%E8%AE%A1%E7%AE%97/">
+                        Prometheus Histogram分位线计算
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        Prometheus有四种指标类型，分别是Counter、Gauge、Histogram以及Summary。
+其中Counter是一个累加的计数值，Gauge是一个瞬时值，Histogram以及Summary是对一段时间内数值做一个汇总统计，Hist...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Sat Sep 21 2024 22:49:07 GMT+0800">2024-09-21</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E5%8F%AF%E8%A7%82%E6%B5%8B/">可观测</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2024/09/21/Prometheus-Histogram%E5%88%86%E4%BD%8D%E7%BA%BF%E8%AE%A1%E7%AE%97/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2024/09/20/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE%E5%AE%9E%E7%8E%B0/">
+                        链路追踪常见协议实现
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        1. Skywalking1.1 SegmentSegment是一批span的集合，它表示一个线程上下文，如果跨线程则需要重新记录为一个segment；跨进程可以表示发起了一个跨线程调用，更多地情况（也是链路追踪最大的意义）是表示了两个服务之间的调用...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Fri Sep 20 2024 23:21:19 GMT+0800">2024-09-20</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E5%8F%AF%E8%A7%82%E6%B5%8B/">可观测</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2024/09/20/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE%E5%AE%9E%E7%8E%B0/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2023/03/03/skywalking%E7%9B%91%E6%8E%A7airflow%E5%8A%9F%E8%83%BD%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/">
+                        skywalking监控airflow功能的设计文档
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        Skywalking监控airflow相关的issue
+相关的pull request：
+
+适配累加类型为delta的Sum metric
+
+适配OpenTelemetry的Exponential Histogram
+
+
+一、前景提要apache a...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Fri Mar 03 2023 14:56:45 GMT+0800">2023-03-03</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E5%8F%AF%E8%A7%82%E6%B5%8B/">可观测</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2023/03/03/skywalking%E7%9B%91%E6%8E%A7airflow%E5%8A%9F%E8%83%BD%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2023/01/26/skywalking-agent-tracer-api%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/">
+                        skywalking-agent-tracer-api设计文档
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        Skywalking-Agent-Tracer-API设计文档相关的issue
+已经被merge的pull request
+一、前景提要SkyWalking Java是一个强大的、实现完善的agent，其通过改变需要监控软件的字节码，在其中插桩来收集...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Thu Jan 26 2023 23:55:43 GMT+0800">2023-01-26</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E5%8F%AF%E8%A7%82%E6%B5%8B/">可观测</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2023/01/26/skywalking-agent-tracer-api%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2022/09/02/CMU15-445%E7%AC%94%E8%AE%B010%E2%80%94%E2%80%94query-execution/">
+                        CMU15-445笔记10——query execution
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        Processing Model明确了如何执行一个查询计划。查询是从上往下还是从下往上，在每个operator之间，我们实际该传多少东西。
+Approach #1: Iterator Model也称为Volcano model或者Pipeline m...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Fri Sep 02 2022 15:56:00 GMT+0800">2022-09-02</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2022/09/02/CMU15-445%E7%AC%94%E8%AE%B010%E2%80%94%E2%80%94query-execution/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2022/08/29/CMU15-445%E7%AC%94%E8%AE%B09%E2%80%94%E2%80%94Join-Algorithms/">
+                        CMU15-445笔记9——Join Algorithms
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        Join Algorithms1. Nested Loop Join1.1 Simple &#x2F; Stupid123foreach tuple r 属于 R:  foreach tuple s 属于 S:    emit, if r and s...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Mon Aug 29 2022 20:54:17 GMT+0800">2022-08-29</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2022/08/29/CMU15-445%E7%AC%94%E8%AE%B09%E2%80%94%E2%80%94Join-Algorithms/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2022/08/26/CMU15-445%E7%AC%94%E8%AE%B08%E2%80%94%E2%80%94Sorting-Aggregations/">
+                        CMU15-445笔记8——Sorting&amp;Aggregations
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        面临的问题：我们设计的这个数据库是基于磁盘的，而实际处理数据需要用到内存，因此我们的算法需要去考虑我们此时想得到的数据可能不在内存中而在磁盘中。
+External Merge Sort外部归并排序。
+排序算法将我们想要排序的数据集分成更小的数据块，称...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Fri Aug 26 2022 15:38:38 GMT+0800">2022-08-26</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2022/08/26/CMU15-445%E7%AC%94%E8%AE%B08%E2%80%94%E2%80%94Sorting-Aggregations/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                <h3 class="home-article-title">
+                    <a href="/2022/08/25/CMU15-445%E7%AC%94%E8%AE%B07%E2%80%94%E2%80%94%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+                        CMU15-445笔记7——多线程
+                    </a>
+                </h3>
+
+                <div class="home-article-content markdown-body">
+                    
+                        concurrency control
+
+Logical correctness
+Physical correctness
+
+Latch
+
+
+
+Locks
+Latches
+
+
+
+Separate
+User transactions
+Threads
+
+...
+                    
+                </div>
+
+                <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fas fa-history"></i>&nbsp;<span class="home-article-date" data-date="Thu Aug 25 2022 09:46:31 GMT+0800">2022-08-25</span></span>
+        
+            <span class="home-article-category"><i class="fas fa-folder"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                    
+                </ul>
+            </span>
+        
+        
+    </div>
+
+    <a href="/2022/08/25/CMU15-445%E7%AC%94%E8%AE%B07%E2%80%94%E2%80%94%E5%A4%9A%E7%BA%BF%E7%A8%8B/">阅读全文&nbsp;<i class="fas fa-angle-right"></i></a>
+</div>
+
+            </li>
+        
+    </ul>
+
+    <div class="home-paginator">
+        <div class="paginator">
+    
+
+    
+        <a class="next btn"
+           href="/page/2/"
+        >下一页</a>
+    
+</div>
+
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

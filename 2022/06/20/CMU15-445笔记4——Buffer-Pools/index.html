@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            CMU15-445笔记4——Buffer Pools |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">CMU15-445笔记4——Buffer Pools</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-06-20 10:49:12</span>
+        <span class="mobile">2022-06-20 10:49</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/CMU-15-445/">CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%AD%98%E5%82%A8/">存储</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>2.1k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>7 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="1-Buffer-Pool-Manager"><a href="#1-Buffer-Pool-Manager" class="headerlink" title="1. Buffer Pool Manager"></a>1. Buffer Pool Manager</h1><h2 id="1-1-Buffer-Pool-Organization"><a href="#1-1-Buffer-Pool-Organization" class="headerlink" title="1.1 Buffer Pool Organization"></a>1.1 Buffer Pool Organization</h2><p>我们为buffer pool分配一块大的内存，并将我们从磁盘中读取到的所有page放入里面。这段内存是由数据库系统来控制的，而不是操作系统。我们将buffer pool分为一个个frame来存放page。当执行引擎请求数据时，如果在buffer pool中找不到对应的数据，DBMS会从磁盘上取出相应的page存放到buffer pool中的frame中，page在frame中存放的顺序并不是按照其在磁盘上的顺序，因此我们需要一个indirection层来寻找相应的page。</p>
+<p><img src="/images/Buffer-Pool.png" alt="Buffer-Pool"></p>
+<center>图1：Buffer Pool Organization</center>
+
+<h3 id="1-1-1-Buffer-Pool-meta-data"><a href="#1-1-1-Buffer-Pool-meta-data" class="headerlink" title="1.1.1 Buffer Pool meta-data"></a>1.1.1 Buffer Pool meta-data</h3><p><img src="/images/Page-Table.png" alt="Page-Table"></p>
+<center>图2：Page Table of Buffer Pool</center>
+Page Table用来追踪存放在内存中的page，Page table是一个hash table。如果我们想找一个特定的page，通过page表和page id，我们就可以知道这个page在哪个frame中。
+除了page table，DBMS还维护了一些额外的元数据来追踪当前Buffer Pool中page的状态：
+* Dirty Flag：该flag用来指示当我们从磁盘中读取到这个page后，这个page是否被修改。
+* Pin/Reference Counter：pin计数或者说是引用计数，它用来追踪想要使用该page的当前线程数量或者是正在查询该page的数量，这意味着DBMS不希望该page被移除或者是交换回磁盘。
+* Other meta data：比如使用日志来记录哪些page被修改。
+
+
+<p><img src="/images/Pin-and-latch.png" alt="Pin-and-latch"></p>
+<center>图3：Pin and Latch</center>
+图中的pin表示DBMS不希望该page被移除，图中的锁用来解决同步互斥问题。
+
+<h3 id="1-1-2-Locks-vs-Latches"><a href="#1-1-2-Locks-vs-Latches" class="headerlink" title="1.1.2 Locks vs. Latches"></a>1.1.2 Locks vs. Latches</h3><ul>
+<li><p>Locks</p>
+<ul>
+<li>用来保护数据库中的逻辑内容，例如：tuple，表和数据库</li>
+<li>事务会在运行的时候持有这个lock</li>
+<li>需要支持回滚（rollback）</li>
+</ul>
+</li>
+<li><p>Latches</p>
+<ul>
+<li>用来保护DBMS的关键部分，例如保护数据结构和保护内存区域</li>
+<li>执行操作的时候会持有该latch，执行完该操作后释放</li>
+<li>无需考虑回滚，因为latch是一个内部的东西</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-1-3-Page-Table-vs-Page-Directory"><a href="#1-1-3-Page-Table-vs-Page-Directory" class="headerlink" title="1.1.3 Page Table vs. Page Directory"></a>1.1.3 Page Table vs. Page Directory</h3><ul>
+<li>Page Table<ul>
+<li>page table保存的是page id到buffer pool中frame的映射</li>
+<li>不需要持久化</li>
+</ul>
+</li>
+<li>Page Directory<ul>
+<li>page directory保存的是page id到数据库文件中page位置的映射</li>
+<li>需要持久化在磁盘中</li>
+</ul>
+</li>
+</ul>
+<h2 id="1-2-Allocation-Policies"><a href="#1-2-Allocation-Policies" class="headerlink" title="1.2 Allocation Policies"></a>1.2 Allocation Policies</h2><p>Allocation Policies是指如何为数据库中的buffer pool分配内存。</p>
+<h3 id="1-2-1-Global-Policies"><a href="#1-2-1-Global-Policies" class="headerlink" title="1.2.1 Global Policies"></a>1.2.1 Global Policies</h3><p>全局策略，这种策略能够使所有要执行的workload都受益。</p>
+<h3 id="1-2-2-Local-Policies"><a href="#1-2-2-Local-Policies" class="headerlink" title="1.2.2 Local Policies"></a>1.2.2 Local Policies</h3><p>局部策略，针对每个单个查询或者单个事务来进行。</p>
+<h2 id="1-3-Buffer-Pool-Optimizations"><a href="#1-3-Buffer-Pool-Optimizations" class="headerlink" title="1.3 Buffer Pool Optimizations"></a>1.3 Buffer Pool Optimizations</h2><h3 id="1-3-1-Multiple-Buffer-Pools"><a href="#1-3-1-Multiple-Buffer-Pools" class="headerlink" title="1.3.1 Multiple Buffer Pools"></a>1.3.1 Multiple Buffer Pools</h3><p>DBMS可以有多个buffer pool，每个buffer pool都有自己的page table。我们可以一种数据库对应一个buffer pool，也可以一个数据表对应一个buffer pool。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>这样可以在每个buffer pool使用不同的策略。</li>
+<li>这样做可以减少那些试图访问buffer pool的不同线程争抢latch的情况发生。</li>
+</ul>
+<p>两种方式实现multiple buffer pools（如何将你要寻找的数据映射到某个buffer pool中的某个page上）：</p>
+<h4 id="1）Object-Id"><a href="#1）Object-Id" class="headerlink" title="1）Object Id"></a>1）Object Id</h4><p>将object id嵌入到record id，之后维护一个object到特定buffer pool的映射。</p>
+<h4 id="2）Hashing"><a href="#2）Hashing" class="headerlink" title="2）Hashing"></a>2）Hashing</h4><p>将page id做hash操作来选择access哪个buffer pool。</p>
+<h3 id="1-3-2-Pre-Fetching"><a href="#1-3-2-Pre-Fetching" class="headerlink" title="1.3.2 Pre-Fetching"></a>1.3.2 Pre-Fetching</h3><p>根据请求计划预取数据来减少停顿（将磁盘中的数据读取到内存中会产生停顿）。DBMS相比于操作系统知道更多查询的细节，其预取page能够做更好的优化。</p>
+<h3 id="1-3-3-Scan-Sharing"><a href="#1-3-3-Scan-Sharing" class="headerlink" title="1.3.3 Scan Sharing"></a>1.3.3 Scan Sharing</h3><p>扫描共享，有一些请求的数据（page）可以重用。这与result caching不同，result caching是重用相同的查询的结果。扫描共享将一个查询的游标附着在另一个做相似查询的游标上，并且记录已经扫描的buffer pool的位置，这样就可以避免重复的扫描。（关于buffer pool中的page会被移除和回写的问题，不用担心，pin counter会对其进行阻止。）</p>
+<h3 id="1-3-4-Buffer-Pool-Bypass"><a href="#1-3-4-Buffer-Pool-Bypass" class="headerlink" title="1.3.4 Buffer Pool Bypass"></a>1.3.4 Buffer Pool Bypass</h3><p>我们分配一小块内存给执行查询的那条线程，之后该线程读取某数据时，如果该数据不在buffer pool中，那么从磁盘中拿到该page后将其放入到本地内存中（而非buffer pool中），当查询执行完后，这些内存中的page被丢弃。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>减少了很大一部分的开销（page table的查询开销，以及latch）</li>
+<li>很适合读取在磁盘上连续存储的页</li>
+<li>可以被用于一些临时的数据（中间结果），比如sorting，joins</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>数据量过大的时候不适合使用</li>
+</ul>
+<h2 id="1-4-OS-page-cache"><a href="#1-4-OS-page-cache" class="headerlink" title="1.4 OS page cache"></a>1.4 OS page cache</h2><p>操作系统读写文件时会有缓存，大多数DBMS会使用direct IO来避免产生操作系统的缓存。目前来看，使用操作系统缓存的DBMS只有Postgres。</p>
+<ul>
+<li><p>如果使用操作系统缓存，那么就相当于两份page，一份在buffer pool中，一份在操作系统的缓存中，这会导致冗余。当buffer pool中的page被修改了，缓存中的page就毫无用处了。</p>
+</li>
+<li><p>保证跨操作系统的管理一致性。</p>
+</li>
+</ul>
+<h1 id="2-Replacement-Policies"><a href="#2-Replacement-Policies" class="headerlink" title="2. Replacement Policies"></a>2. Replacement Policies</h1><p>Buffer Pool替换策略是指决定buffer pool中的哪个frame被换出以此为换入的page提供空间。</p>
+<p><strong>Goals：</strong></p>
+<ul>
+<li>正确性：如果某个数据我们并没有真正地使用完，那么我们不想将它写出或移除。</li>
+<li>准确性：希望能够确保所移除的page是在未来不太会被使用到的那些page。</li>
+<li>速度：希望该策略的执行是较为快速的。</li>
+<li>元数据的开销：希望元数据的开销尽可能的小。</li>
+</ul>
+<h2 id="2-1-Least-Recently-Used"><a href="#2-1-Least-Recently-Used" class="headerlink" title="2.1 Least Recently Used"></a>2.1 Least Recently Used</h2><p>Least recently used策略是指最近最少使用策略，该策略记录page的时间戳（每次access会更新时间戳），优先替换时间戳最老的page。</p>
+<h2 id="2-2-Clock"><a href="#2-2-Clock" class="headerlink" title="2.2 Clock"></a>2.2 Clock</h2><p>Clock是一种类似于LRU的策略，该策略无须去追踪每个单个page的时间戳，而需要去追踪每个page的标志位（reference bit），这个标志位指示的是这个page是否被访问了。将page组织成一个环形的buffer，然后有一个能够旋转的指针去检查每个page的该标志位是1还是0，如果其为0,那么就表示自从上次被检查后，该page没有在被访问了，因此将该page从这个环形buffer中移除，如果其为1，我们将其设置为0，并访问下一个page的该标志位。</p>
+<h3 id="Sequential-Flooding"><a href="#Sequential-Flooding" class="headerlink" title="Sequential Flooding"></a>Sequential Flooding</h3><p>LRU与Clock策略都会受到sequential flooding的影响，如果一个查询是顺序地读取每个page，那么这个查询会导致buffer pool被只使用一次的page所污染，而真正之后需要的page被移除了。</p>
+<h2 id="2-3-LRU-K"><a href="#2-3-LRU-K" class="headerlink" title="2.3 LRU-K"></a>2.3 LRU-K</h2><p>被访问了k次的page会被记入缓存队列，同时根据时间戳计算出某个page多久没被使用来决定哪个page被移除。</p>
+<h2 id="2-4-Localization"><a href="#2-4-Localization" class="headerlink" title="2.4 Localization"></a>2.4 Localization</h2><p>使用多个buffer pool，使每个查询之间相互独立，每个查询的缓存page存入到对应查询的buffer pool中。例如Postgres就为查询维护了一个私有的、小的环形buffer pool。</p>
+<h2 id="2-5-Priority-Hints"><a href="#2-5-Priority-Hints" class="headerlink" title="2.5 Priority Hints"></a>2.5 Priority Hints</h2><p>DBMS在查询执行时能够知道每个page的上下文信息，因此其能够提供给buffer pool某些page的重要性。</p>
+<h2 id="2-6-Dirty-Pages"><a href="#2-6-Dirty-Pages" class="headerlink" title="2.6 Dirty Pages"></a>2.6 Dirty Pages</h2><p>每个page有一个dirty bit来指示该page在被读入buffer pool后是否被修改，而在替换page时需要考虑这一点，有两种关于dirty page的替换策略：</p>
+<ul>
+<li>FAST：如果buffer pool中的页不脏，DBMS直接移除它。</li>
+<li>SLOW：如果buffer pool中的页是脏的，DBMS必须首先将内存中的page写回到磁盘中，之后在移除它。</li>
+</ul>
+<p>在具体的替换策略中，需要在替换最近可能被使用+非脏页和最近不会被使用+脏页中进行权衡。</p>
+<h3 id="Background-Writing"><a href="#Background-Writing" class="headerlink" title="Background Writing"></a>Background Writing</h3><p>后台写操作，DBMS中有一条执行定时任务的线程，它会去buffer pool中找出那些被标记为dirty的page并将它们写出到磁盘上，以此将page的状态由dirty变为clean。要注意在回写前首先写操作日志到磁盘上。</p>
+<h1 id="3-Other-Memory-Pools"><a href="#3-Other-Memory-Pools" class="headerlink" title="3. Other Memory Pools"></a>3. Other Memory Pools</h1><p>除了用于tuple和indexes的内存空间，DBMS需要其它的内存池。</p>
+<ul>
+<li>Sorting+Join Buffer</li>
+<li>Query Caches</li>
+<li>Maintenance Buffers</li>
+<li>Log Buffers</li>
+<li>Dictionary Caches</li>
+</ul>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：CMU15-445笔记4——Buffer Pools</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2022-06-20 10:49:12</li>
+        <li>
+            本文链接：http://mufiye.github.io/2022/06/20/CMU15-445笔记4——Buffer-Pools/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/CMU-15-445/">#CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%AD%98%E5%82%A8/">#存储</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/08/22/CMU15-445%E7%AC%94%E8%AE%B05%E2%80%94%E2%80%94Hash-Table/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CMU15-445笔记5——Hash Table</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/06/03/MIT6-824%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94Introduction/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">MIT6.824笔记1——Introduction</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Buffer-Pool-Manager"><span class="nav-text">1. Buffer Pool Manager</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Buffer-Pool-Organization"><span class="nav-text">1.1 Buffer Pool Organization</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-Buffer-Pool-meta-data"><span class="nav-text">1.1.1 Buffer Pool meta-data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-Locks-vs-Latches"><span class="nav-text">1.1.2 Locks vs. Latches</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-3-Page-Table-vs-Page-Directory"><span class="nav-text">1.1.3 Page Table vs. Page Directory</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Allocation-Policies"><span class="nav-text">1.2 Allocation Policies</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-Global-Policies"><span class="nav-text">1.2.1 Global Policies</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-Local-Policies"><span class="nav-text">1.2.2 Local Policies</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-Buffer-Pool-Optimizations"><span class="nav-text">1.3 Buffer Pool Optimizations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-Multiple-Buffer-Pools"><span class="nav-text">1.3.1 Multiple Buffer Pools</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89Object-Id"><span class="nav-text">1）Object Id</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%EF%BC%89Hashing"><span class="nav-text">2）Hashing</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-Pre-Fetching"><span class="nav-text">1.3.2 Pre-Fetching</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-3-Scan-Sharing"><span class="nav-text">1.3.3 Scan Sharing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-4-Buffer-Pool-Bypass"><span class="nav-text">1.3.4 Buffer Pool Bypass</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-OS-page-cache"><span class="nav-text">1.4 OS page cache</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Replacement-Policies"><span class="nav-text">2. Replacement Policies</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Least-Recently-Used"><span class="nav-text">2.1 Least Recently Used</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Clock"><span class="nav-text">2.2 Clock</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Sequential-Flooding"><span class="nav-text">Sequential Flooding</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-LRU-K"><span class="nav-text">2.3 LRU-K</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-Localization"><span class="nav-text">2.4 Localization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-Priority-Hints"><span class="nav-text">2.5 Priority Hints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-Dirty-Pages"><span class="nav-text">2.6 Dirty Pages</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Background-Writing"><span class="nav-text">Background Writing</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Other-Memory-Pools"><span class="nav-text">3. Other Memory Pools</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

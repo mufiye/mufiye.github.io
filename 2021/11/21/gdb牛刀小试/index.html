@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            gdb牛刀小试 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">gdb牛刀小试</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-11-21 12:53:00</span>
+        <span class="mobile">2021-11-21 12:53</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/gdb/">gdb</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>4 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="gdb牛刀小试"><a href="#gdb牛刀小试" class="headerlink" title="gdb牛刀小试"></a>gdb牛刀小试</h1><h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近时间很多，我在努力做MIT6.S081这门课的Lab，但是经常会遇到一些让我难以理解并且无从入手的bug，因此愈加萌发了学习gdb的想法。也试着去看gdb的官方文档，但是那个pdf足足有将近900页，总感觉这样看书对于一个新手不是高效的学习方法（当然对于已经使用过一段时间gdb的程序员来说，平时抽点时间细水长流地去看官方文档肯定是很棒的），因此想要找一个好点的教程，带我入门gdb，于是翻到了<a class="link" target="_blank" rel="noopener" href="https://blog.csdn.net/haoel/article/details/2879?spm=a2c6h.12873639.0.0.3642f4022XBITL">大佬写的教程<i class="fas fa-external-link-alt"></i></a>（真的很古早，2003年，我当时看到发表时间人懵了）。本文一是想记录一下自己的学习过程，二也是想做个教程上的翻新（可能教程太早，gdb也发生了一些变化）。</p>
+<h2 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">func</span><span class="params">(<span class="type">int</span> n)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> sum = <span class="number">0</span>, i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        sum += i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">main()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//new added</span></span><br><span class="line">    <span class="type">int</span> j=<span class="number">0</span>;</span><br><span class="line">    j = <span class="number">1</span>;</span><br><span class="line">    j = <span class="number">2</span>;</span><br><span class="line">    j = <span class="number">3</span>;</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">    <span class="type">long</span> result = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">100</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        result += i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;result[1-100] = %d /n&quot;</span>, result);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;result[1-250] = %d /n&quot;</span>, func(<span class="number">250</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="gdb调试"><a href="#gdb调试" class="headerlink" title="gdb调试"></a>gdb调试</h2><ol>
+<li>首先编译代码生成可执行文件（一定要加-g参数，这样才能把调试信息加到可执行文件中）</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cc -g tst.c -o tst</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>然后启动gdb（$后为bash命令）</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ubuntu@VM-0-14-ubuntu:~/learn_gdb<span class="variable">$gdb</span></span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">--Type &lt;RET&gt; <span class="keyword">for</span> more, q to quit, c to <span class="built_in">continue</span> without paging--c</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>之后会跳出一大段关于gdb的描述，并问你是否继续，继续就输入c，退出就输入q</li>
+<li>进入我们想要调试的文件，注意是可执行文件，所以不需要带上文件后缀类型名（gdb后为输入的命令）</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) file tst</span><br><span class="line">Reading symbols from tst...</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>输入l命令查看源代码（一次默认显示10行，想看更多就按回车）</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) l   </span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><p>设置断点（设置两个断点，第一个设置在第16行，第二个设置在函数func的入口处）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) break 16</span><br><span class="line">Breakpoint 1 at 0x1187: file tst.c, line 16.</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) break func</span><br><span class="line">Breakpoint 2 at 0x1149: file tst.c, line 4.</span><br></pre></td></tr></table></figure></li>
+<li><p>查看断点的信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info break   </span><br><span class="line">Num     Type           Disp Enb Address            What</span><br><span class="line">1       breakpoint     keep y   0x0000000000001187 in main at tst.c:16</span><br><span class="line">2       breakpoint     keep y   0x0000000000001149 in func at tst.c:4</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>运行代码（r为run的缩写）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(gdb) r</span><br><span class="line">Starting program: /home/ubuntu/learn_gdb/tst </span><br><span class="line"></span><br><span class="line">Breakpoint 1, main () at tst.c:16</span><br><span class="line">16          int j=0;</span><br></pre></td></tr></table></figure></li>
+<li><p>执行单条语句（n为next的缩写）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(gdb) n</span><br><span class="line">17          j = 1;</span><br><span class="line">(gdb) n</span><br><span class="line">18          j = 2;</span><br><span class="line">(gdb) n</span><br><span class="line">19          j = 3;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>继续运行程序（c为continue的缩写），这时发现程序运行到了第二个断点处</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(gdb) c</span><br><span class="line">Continuing.</span><br><span class="line"></span><br><span class="line">Breakpoint 2, func (n=21845) at tst.c:4</span><br><span class="line">4       &#123;</span><br></pre></td></tr></table></figure></li>
+<li><p>继续单步执行程序</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(gdb) n</span><br><span class="line">5           int sum = 0, i;</span><br><span class="line">(gdb) n</span><br><span class="line">6           for (i = 0; i &lt; n; i++)</span><br><span class="line">(gdb) n</span><br><span class="line">8               sum += i;</span><br></pre></td></tr></table></figure></li>
+<li><p>打印一些变量的信息（p为print的缩写）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p i</span><br><span class="line">$1 = 0</span><br><span class="line">(gdb) p sum</span><br><span class="line">$2 = 0</span><br></pre></td></tr></table></figure></li>
+<li><p>继续单步执行程序</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) n</span><br><span class="line">6           for (i = 0; i &lt; n; i++)</span><br><span class="line">(gdb) n</span><br><span class="line">8               sum += i;</span><br></pre></td></tr></table></figure></li>
+<li><p>再查看一下变量的信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p i</span><br><span class="line">$3 = 1</span><br><span class="line">(gdb) p sum</span><br><span class="line">$4 = 0</span><br></pre></td></tr></table></figure></li>
+<li><p>查看函数栈</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(gdb) bt</span><br><span class="line">#0  func (n=250) at tst.c:8</span><br><span class="line">#1  0x00005555555551e9 in main () at tst.c:28</span><br></pre></td></tr></table></figure></li>
+<li><p>退出当前的函数（也就是func函数）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(gdb) finish</span><br><span class="line">Run till exit from #0  func (n=250) at tst.c:8</span><br><span class="line">0x00005555555551e9 in main () at tst.c:28</span><br><span class="line">28          printf(&quot;result[1-250] = %d /n&quot;, func(250));</span><br><span class="line">Value returned is $5 = 31125</span><br></pre></td></tr></table></figure></li>
+<li><p>继续运行程序（可以发现程序正常退出了）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(gdb) c</span><br><span class="line">Continuing.</span><br><span class="line">result[1-100] = 5050 /nresult[1-250] = 31125 /n[Inferior 1 (process 2973774) exited normally]</span><br></pre></td></tr></table></figure></li>
+<li><p>退出gdb调试</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) q</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="一些疑问以及自己的解答"><a href="#一些疑问以及自己的解答" class="headerlink" title="一些疑问以及自己的解答"></a>一些疑问以及自己的解答</h2><ol>
+<li>break断点的设置是断在一个语句的之前还是之后的？（比如break 16，这个第16行的语句是执行了没有呢？）<br>Answer：break断点的设置是断在一个语句之前的。也就是说第16行语句是没有执行的（可以通过print相关的变量验证）。</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a class="link" target="_blank" rel="noopener" href="https://blog.csdn.net/haoel/article/details/2879">大佬的gdb调试程序（一）<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：gdb牛刀小试</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2021-11-21 12:53:00</li>
+        <li>
+            本文链接：http://mufiye.github.io/2021/11/21/gdb牛刀小试/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/gdb/">#gdb</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/11/22/gdb%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%972/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">gdb入门系列2</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/05/28/%E4%BD%BF%E7%94%A8%E5%90%AF%E5%8F%91%E5%BC%8F%E7%AE%97%E6%B3%95%E8%A7%A3%E5%86%B3%E5%A4%9A%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">使用启发式算法解决多背包问题</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#gdb%E7%89%9B%E5%88%80%E5%B0%8F%E8%AF%95"><span class="nav-text">gdb牛刀小试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="nav-text">测试代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gdb%E8%B0%83%E8%AF%95"><span class="nav-text">gdb调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E7%96%91%E9%97%AE%E4%BB%A5%E5%8F%8A%E8%87%AA%E5%B7%B1%E7%9A%84%E8%A7%A3%E7%AD%94"><span class="nav-text">一些疑问以及自己的解答</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

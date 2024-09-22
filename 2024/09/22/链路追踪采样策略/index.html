@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            链路追踪采样策略 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">链路追踪采样策略</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2024-09-22 13:58:12</span>
+        <span class="mobile">2024-09-22 13:58</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%8F%AF%E8%A7%82%E6%B5%8B/">可观测</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/skywalking/">skywalking</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/">链路追踪</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E9%87%87%E6%A0%B7%E7%AD%96%E7%95%A5/">采样策略</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/openTelemetry/">openTelemetry</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.8k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>8 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <p>链路追踪数据量大，如果全采样不仅对于客户端的IO负担很大，而且对于采集侧的内存、IO压力巨大，因此需要采样策略来决定哪些链路数据需要采样，哪些不需要。本篇文章介绍了一些常见的链路追踪采样策略及其在业界的实现方式。</p>
+<h1 id="概率采样"><a href="#概率采样" class="headerlink" title="概率采样"></a>概率采样</h1><p>概率采样是指只采集某一个概率&#x2F;比例的链路数据，保证只有一部分的数据被采样，减少数据量。常见的做法是使用trace id计算概率。</p>
+<ul>
+<li>使用trace id计算hash值，之后用该hash值作为生成随机数的seed，并与设定的采样概率做比较决定是否采样：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SamplingEvaluator</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">shouldSample</span><span class="params">(<span class="type">double</span> sampleRate)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> random.nextFloat() &lt; sampleRate;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">shouldSample</span><span class="params">(String traceId, <span class="type">double</span> sampleRate)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (StringUtils.isBlank(traceId)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="type">long</span> <span class="variable">hash</span> <span class="operator">=</span> HashUtil.fnv64a(traceId);</span><br><span class="line">        <span class="type">float</span> <span class="variable">sampleValue</span> <span class="operator">=</span> HashUtil.nextFloat(hash);</span><br><span class="line">        <span class="keyword">return</span> sampleValue &lt; sampleRate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>opentelemetry对于概率采样的实现，opentelemetry的trace id中包含随机数，可以直接使用该随机数进行概率判断</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Immutable</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">TraceIdRatioBasedSampler</span> <span class="keyword">implements</span> <span class="title class_">Sampler</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> TraceIdRatioBasedSampler <span class="title function_">create</span><span class="params">(<span class="type">double</span> ratio)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (ratio &lt; <span class="number">0.0</span> || ratio &gt; <span class="number">1.0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;ratio must be in range [0.0, 1.0]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">long</span> idUpperBound;</span><br><span class="line">        <span class="comment">// Special case the limits, to avoid any possible issues with lack of precision across</span></span><br><span class="line">        <span class="comment">// double/long boundaries. For probability == 0.0, we use Long.MIN_VALUE as this guarantees</span></span><br><span class="line">        <span class="comment">// that we will never sample a trace, even in the case where the id == Long.MIN_VALUE, since</span></span><br><span class="line">        <span class="comment">// Math.Abs(Long.MIN_VALUE) == Long.MIN_VALUE.</span></span><br><span class="line">        <span class="keyword">if</span> (ratio == <span class="number">0.0</span>) &#123;</span><br><span class="line">            idUpperBound = Long.MIN_VALUE;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ratio == <span class="number">1.0</span>) &#123;</span><br><span class="line">            idUpperBound = Long.MAX_VALUE;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            idUpperBound = (<span class="type">long</span>) (ratio * Long.MAX_VALUE);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">TraceIdRatioBasedSampler</span>(ratio, idUpperBound);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> SamplingResult <span class="title function_">shouldSample</span><span class="params">(</span></span><br><span class="line"><span class="params">        Context parentContext,</span></span><br><span class="line"><span class="params">        String traceId,</span></span><br><span class="line"><span class="params">        String name,</span></span><br><span class="line"><span class="params">        SpanKind spanKind,</span></span><br><span class="line"><span class="params">        Attributes attributes,</span></span><br><span class="line"><span class="params">        List&lt;LinkData&gt; parentLinks)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Math.abs(getTraceIdRandomPart(traceId)) &lt; idUpperBound</span><br><span class="line">        ? POSITIVE_SAMPLING_RESULT</span><br><span class="line">        : NEGATIVE_SAMPLING_RESULT;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="头部采样"><a href="#头部采样" class="headerlink" title="头部采样"></a>头部采样</h1><p>头部采样是指在一条链路的开始决定该条链路是否要被采样，如果需要被采样则在上下文（context）中透传采样标记，表示全链路采样。OpenTelemetry Sdk实现了头部采样。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Immutable</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">ParentBasedSampler</span> <span class="keyword">implements</span> <span class="title class_">Sampler</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> SamplingResult <span class="title function_">shouldSample</span><span class="params">(</span></span><br><span class="line"><span class="params">        Context parentContext,</span></span><br><span class="line"><span class="params">        String traceId,</span></span><br><span class="line"><span class="params">        String name,</span></span><br><span class="line"><span class="params">        SpanKind spanKind,</span></span><br><span class="line"><span class="params">        Attributes attributes,</span></span><br><span class="line"><span class="params">        List&lt;LinkData&gt; parentLinks)</span> &#123;</span><br><span class="line">        <span class="type">SpanContext</span> <span class="variable">parentSpanContext</span> <span class="operator">=</span> Span.fromContext(parentContext).getSpanContext();</span><br><span class="line">        <span class="keyword">if</span> (!parentSpanContext.isValid()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>.root.shouldSample(</span><br><span class="line">                parentContext, traceId, name, spanKind, attributes, parentLinks);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (parentSpanContext.isRemote()) &#123;</span><br><span class="line">            <span class="keyword">return</span> parentSpanContext.isSampled()</span><br><span class="line">            ? <span class="built_in">this</span>.remoteParentSampled.shouldSample(</span><br><span class="line">                parentContext, traceId, name, spanKind, attributes, parentLinks)</span><br><span class="line">            : <span class="built_in">this</span>.remoteParentNotSampled.shouldSample(</span><br><span class="line">                parentContext, traceId, name, spanKind, attributes, parentLinks);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> parentSpanContext.isSampled()</span><br><span class="line">        ? <span class="built_in">this</span>.localParentSampled.shouldSample(</span><br><span class="line">            parentContext, traceId, name, spanKind, attributes, parentLinks)</span><br><span class="line">        : <span class="built_in">this</span>.localParentNotSampled.shouldSample(</span><br><span class="line">            parentContext, traceId, name, spanKind, attributes, parentLinks);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="头部概率采样"><a href="#头部概率采样" class="headerlink" title="头部概率采样"></a>头部概率采样</h1><p>头部采样加上概率是指在头部服务计算概率是否命中，如果命中则之后的链路数据全采样，否则不采样。如果采样命中，则其会在链路调用发生跨进程&#x2F;线程数据透传的时候，在上下文信息中带上采样标记，表示该链路数据需要被采样。</p>
+<p><img src="/images/trace_sample.png" alt="head-ratio-sample"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (traceConfig != <span class="literal">null</span> &amp;&amp; traceConfig.isEntrySampledOpen()) &#123;</span><br><span class="line">    <span class="type">Double</span> <span class="variable">entrySampledRate</span> <span class="operator">=</span> traceConfig.getEntrySampledRate();</span><br><span class="line">    <span class="keyword">if</span> (entrySampledRate != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (entrySampledRate &gt;= <span class="number">1.0</span>) &#123;</span><br><span class="line">            dtc.addSamplingStrategy(SamplingStrategy.HEAD_ENTRY);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (entrySampledRate &gt; <span class="number">0</span> &amp;&amp;</span><br><span class="line">                   SamplingEvaluator.shouldSample(traceContext.getTraceId(), entrySampledRate)) &#123;</span><br><span class="line">            dtc.addSamplingStrategy(SamplingStrategy.HEAD_ENTRY);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="入口固定数量采样"><a href="#入口固定数量采样" class="headerlink" title="入口固定数量采样"></a>入口固定数量采样</h1><p>每一条链路都有一个入口，该入口可能是一个Http Url，可能是一个服务接口，那么为了保证在一段时间内每一个入口都有一定数量的链路数据被采样到，我们设置了入口固定数量采样策略，使用计数器存储一个时间窗口内某一个入口的链路采样数量。其同样通过头部采样标记透传标识链路需要被采样。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (traceConfig != <span class="literal">null</span> &amp;&amp; traceConfig.isEntrySampledOpen()) &#123;</span><br><span class="line">    <span class="keyword">if</span> ((traceContext.getSamplingStrategy() &amp; SamplingStrategy.HEAD_ENTRY.getValue()) == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">headHit</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">keyCapacity</span> <span class="operator">=</span> traceConfig.getEntrySampledKeyCountPerSec();</span><br><span class="line">        <span class="type">int</span> <span class="variable">valueCapacity</span> <span class="operator">=</span> traceConfig.getEntrySampledValueCountPerSec();</span><br><span class="line">        <span class="keyword">if</span> (StringUtils.isNotEmpty(headHttpUrl)) &#123;</span><br><span class="line">            headHit = HeadEntryFilter.getInstance().hit(headHttpUrl, keyCapacity, valueCapacity);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (StringUtils.isNotEmpty(headRpcService)) &#123;</span><br><span class="line">            headHit = HeadEntryFilter.getInstance().hit(headRpcService, keyCapacity, valueCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (headHit) &#123;</span><br><span class="line">            dtc.addSamplingStrategy(SamplingStrategy.HEAD_ENTRY);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="固定数量采样"><a href="#固定数量采样" class="headerlink" title="固定数量采样"></a>固定数量采样</h1><p>Skywalking对Span进行计数，决定是否采样。sample_n_per_3_secs配置，每3秒的限制数量，计数器计数进行比较：</p>
+<ul>
+<li>对于带有上游报文数据的entry span必定采样</li>
+<li>对于local span、exit span和无上游报文数据的entry span部分采样</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@DefaultImplementor</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SamplingService</span> <span class="keyword">implements</span> <span class="title class_">BootService</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">trySampling</span><span class="params">(String operationName)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (on) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">factor</span> <span class="operator">=</span> samplingFactorHolder.get();</span><br><span class="line">            <span class="keyword">if</span> (factor &lt; samplingRateWatcher.getSamplingRate()) &#123;</span><br><span class="line">                <span class="keyword">return</span> samplingFactorHolder.compareAndSet(factor, factor + <span class="number">1</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="根据系统容量采样"><a href="#根据系统容量采样" class="headerlink" title="根据系统容量采样"></a>根据系统容量采样</h1><p>Skywalking中有根据系统CPU利用率判断是否采样的采样器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@OverrideImplementor(SamplingService.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TraceSamplerCpuPolicyExtendService</span> <span class="keyword">extends</span> <span class="title class_">SamplingService</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">trySampling</span><span class="params">(<span class="keyword">final</span> String operationName)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (cpuUsagePercentLimitOn) &#123;</span><br><span class="line">            <span class="type">double</span> <span class="variable">cpuUsagePercent</span> <span class="operator">=</span> jvmService.getCpuUsagePercent();</span><br><span class="line">            <span class="keyword">if</span> (cpuUsagePercent &gt; TraceSamplerCpuPolicyPluginConfig.Plugin.CpuPolicy.SAMPLE_CPU_USAGE_PERCENT_LIMIT) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.trySampling(operationName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="标签采样"><a href="#标签采样" class="headerlink" title="标签采样"></a>标签采样</h1><p>可以为Span打上标签，在采样时与配置中需要采样的标签进行匹配，如果匹配上了则采样。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">addSamplingFlagIfNeed</span><span class="params">(String key, String value)</span>&#123;</span><br><span class="line">    <span class="type">TraceConfig</span> <span class="variable">config</span> <span class="operator">=</span> m_manager.getConfigManager().getTraceConfig();</span><br><span class="line">    <span class="type">TraceContext</span> <span class="variable">traceContext</span> <span class="operator">=</span> m_manager.getThreadLocalTraceContext();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (config != <span class="literal">null</span> &amp;&amp; traceContext <span class="keyword">instanceof</span> DefaultTraceContext)&#123;</span><br><span class="line">        List&lt;Pair&lt;Pattern, Pattern&gt;&gt; patternList = config.getTagSampledSelectors();</span><br><span class="line">        <span class="keyword">if</span> (tagMatched(patternList, key, value))&#123;  <span class="comment">// 如果标签匹配</span></span><br><span class="line">            <span class="type">DefaultTraceContext</span> <span class="variable">defaultTraceContext</span> <span class="operator">=</span> (DefaultTraceContext)traceContext;</span><br><span class="line">            defaultTraceContext.addSamplingStrategy(SamplingStrategy.TAG_RULE);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="后置采样"><a href="#后置采样" class="headerlink" title="后置采样"></a>后置采样</h1><p>对于链路中出现需要保留的链路，该节点之后的所有链路都会保留，常见于异常，慢请求，特定用户ID等。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">putTraceContext</span><span class="params">(Context ctx, TraceContext traceContext)</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> (!messageTree.canDiscard()) &#123; <span class="comment">// 后置采样会设置这个canDiscard，概率采样根据canDiscard不会丢弃后置采样的样本</span></span><br><span class="line">        <span class="keyword">if</span> (config != <span class="literal">null</span> &amp;&amp; config.isPostSampledOpen() &amp;&amp; traceContext <span class="keyword">instanceof</span> DefaultTraceContext) &#123;</span><br><span class="line">            <span class="type">DefaultTraceContext</span> <span class="variable">defaultTraceContext</span> <span class="operator">=</span> (DefaultTraceContext) traceContext;</span><br><span class="line">            defaultTraceContext.addSamplingStrategy(SamplingStrategy.POST);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (traceContext.getSamplingStrategy() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">sampleStrategy</span> <span class="operator">=</span> traceContext.getSamplingStrategy();</span><br><span class="line">        sampleStrategy &amp;= <span class="number">0xfffffff7</span>;</span><br><span class="line">        ctx.addProperty(TraceContext.SAMPLED, String.valueOf(sampleStrategy));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logError</span><span class="params">(String message, Throwable cause)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (Cat.getManager().isCatEnabled()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (shouldLog(cause)) &#123;</span><br><span class="line">            <span class="type">StringWriter</span> <span class="variable">writer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringWriter</span>(<span class="number">2048</span>);</span><br><span class="line">            <span class="keyword">if</span> (message != <span class="literal">null</span>) &#123;</span><br><span class="line">                writer.write(StringUtils.truncate(message, CatConstants.EXCEPT_LINER_LIMIT));</span><br><span class="line">                writer.write(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (ProblemFilter.hit(cause)) &#123;</span><br><span class="line">                <span class="comment">// 有异常的时候会设置canDiscard为false，默认初始化为true</span></span><br><span class="line">                m_manager.getThreadLocalMessageTree().setDiscard(<span class="literal">false</span>);</span><br><span class="line">                cause.printStackTrace(<span class="keyword">new</span> <span class="title class_">ThrowablePrintWriter</span>(writer));</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                writer.write(<span class="string">&quot;stacktrace was throttled&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="尾部采样"><a href="#尾部采样" class="headerlink" title="尾部采样"></a>尾部采样</h1><p>上面的采样策略都是在客户端决定是否采样，而尾部采样可以在采集侧采集到整条链路数据之后再决定是否需要存储这条链路。Opentelemetry Collector目前支持了该<a class="link" target="_blank" rel="noopener" href="https://opentelemetry.io/docs/concepts/sampling/#tail-sampling">尾部采样策略<i class="fas fa-external-link-alt"></i></a>，同时据我所知阿里云团队目前也支持了该种采样策略，其可以做到在采集侧暂时保存5min全量的链路数据。使用尾部采样策略我们可以对整条链路进行定制化的采集，比如我们可以采集整条链路耗时超过特定阈值的链路，可以采集有特殊状态码的整条链路。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">processors:</span></span><br><span class="line">  <span class="comment"># 尾部采样器</span></span><br><span class="line">  <span class="attr">tail_sampling:</span></span><br><span class="line">    <span class="attr">decision_wait:</span> <span class="string">10s</span></span><br><span class="line">    <span class="attr">num_traces:</span> <span class="number">100</span></span><br><span class="line">    <span class="attr">expected_new_traces_per_sec:</span> <span class="number">100</span></span><br><span class="line">    <span class="attr">policies:</span></span><br><span class="line">      [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">name:</span> <span class="string">policy-1</span>,</span><br><span class="line">          <span class="attr">type:</span> <span class="string">status_code</span>,</span><br><span class="line">          <span class="attr">status_code:</span> &#123;<span class="attr">status_codes:</span> [<span class="string">ERROR</span>]&#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">name:</span> <span class="string">policy-2</span>,</span><br><span class="line">          <span class="attr">type:</span> <span class="string">probabilistic</span>,</span><br><span class="line">          <span class="attr">probabilistic:</span> &#123;<span class="attr">sampling_percentage:</span> <span class="number">20</span>&#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>decision_wait：在做出采样决定之前，从 trace 的第一个跨度开始的等待时间</li>
+<li>num_traces：内存中保存的 trace 数</li>
+<li>expected_new_traces_per_sec：预期的新 trace 数</li>
+<li>policies：采样策略集合</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a class="link" target="_blank" rel="noopener" href="https://github.com/apache/skywalking-java">Skywalking Java Agent代码仓库<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link" target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-java">Opentelemetry Java Sdk代码仓库<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link" target="_blank" rel="noopener" href="https://github.com/open-telemetry/opentelemetry-collector-contrib">Opentelemetry-Collector代码仓库<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link" target="_blank" rel="noopener" href="https://opentelemetry.io/docs/concepts/sampling/">OpenTelemetry Sampling<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link" target="_blank" rel="noopener" href="https://jiekun.dev/posts/sampling-in-distributed-traces/">可观测性专题: 分布式追踪中的采样<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link" target="_blank" rel="noopener" href="https://github.com/StabilityMan/StabilityGuide/blob/master/docs/diagnosis/tracing/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%E5%85%B6%E5%AE%9E%E5%BE%88%E7%AE%80%E5%8D%95%E2%80%94%E2%80%94%E9%93%BE%E8%B7%AF%E6%88%90%E6%9C%AC%E8%BF%9B%E9%98%B6%E6%8C%87%E5%8D%97.md">StabilityGuide - 链路追踪（Tracing）其实很简单——链路成本进阶指南<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link" target="_blank" rel="noopener" href="https://docs.guance.com/best-practices/cloud-native/opentelemetry-simpling/#opentelemetry">OpenTelemetry 采样最佳实践<i class="fas fa-external-link-alt"></i></a></li>
+</ol>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：链路追踪采样策略</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2024-09-22 13:58:12</li>
+        <li>
+            本文链接：http://mufiye.github.io/2024/09/22/链路追踪采样策略/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/skywalking/">#skywalking</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/">#链路追踪</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E9%87%87%E6%A0%B7%E7%AD%96%E7%95%A5/">#采样策略</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/openTelemetry/">#openTelemetry</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2024/09/22/CAT%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CAT源码解析</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2024/09/21/Prometheus-Histogram%E5%88%86%E4%BD%8D%E7%BA%BF%E8%AE%A1%E7%AE%97/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Prometheus Histogram分位线计算</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E9%87%87%E6%A0%B7"><span class="nav-text">概率采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%B4%E9%83%A8%E9%87%87%E6%A0%B7"><span class="nav-text">头部采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%B4%E9%83%A8%E6%A6%82%E7%8E%87%E9%87%87%E6%A0%B7"><span class="nav-text">头部概率采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%A5%E5%8F%A3%E5%9B%BA%E5%AE%9A%E6%95%B0%E9%87%8F%E9%87%87%E6%A0%B7"><span class="nav-text">入口固定数量采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BA%E5%AE%9A%E6%95%B0%E9%87%8F%E9%87%87%E6%A0%B7"><span class="nav-text">固定数量采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B9%E6%8D%AE%E7%B3%BB%E7%BB%9F%E5%AE%B9%E9%87%8F%E9%87%87%E6%A0%B7"><span class="nav-text">根据系统容量采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%87%E7%AD%BE%E9%87%87%E6%A0%B7"><span class="nav-text">标签采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8E%E7%BD%AE%E9%87%87%E6%A0%B7"><span class="nav-text">后置采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%BE%E9%83%A8%E9%87%87%E6%A0%B7"><span class="nav-text">尾部采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-text">Reference</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

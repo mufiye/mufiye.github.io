@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            gdb入门系列3 |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">gdb入门系列3</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-11-24 14:58:48</span>
+        <span class="mobile">2021-11-24 14:58</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8/">操作系统内核</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/gdb/">gdb</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.4k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>6 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="GDB入门系列3"><a href="#GDB入门系列3" class="headerlink" title="GDB入门系列3"></a>GDB入门系列3</h1><h2 id="查看栈信息"><a href="#查看栈信息" class="headerlink" title="查看栈信息"></a>查看栈信息</h2><h3 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h3><ul>
+<li>backtrace（缩写为bt）<br>打印当前的函数调用栈的所有信息。</li>
+<li>backtrace <n><br>  n是一个正整数，表示只打印栈顶上n层的栈信息。</n></li>
+<li>backtrace &lt;-n&gt;<br>  -n表一个负整数，表示只打印栈底下n层的栈信息。</li>
+<li>frame <n><br>  n是一个从0开始的整数，是栈中的层编号。比如：frame 0，表示栈顶，frame 1，表示栈的第二层。</n></li>
+<li>up <n><br>  表示向栈的上面移动n层，可以不打n，表示向上移动一层。</n></li>
+<li>down <n><br>  表示向栈的下面移动n层，可以不打n，表示向下移动一层。</n></li>
+<li>上面的命令，都会打印出移动到的栈层的信息。如果你不想让其打出信息。你可以使用这三个命令：select-frame <n> 对应于 frame 命令，up-silently <n> 对应于 up 命令，down-silently <n> 对应于 down 命令。</n></n></n></li>
+<li>frame 或 f<br>  会打印出这些信息：栈的层编号，当前的函数名，函数参数值，函数所在文件及行号，函数执行到的语句。</li>
+<li>info frame<br>  这个命令会打印出更为详细的当前栈层的信息，只不过，大多数都是运行时的内内地址。比如：函数地址，调用函数的地址，被调用函数的地址，目前的函数是由什么样的程序语言写成的、函数参数地址及值、局部变量的地址等等。</li>
+<li>info args<br>  打印出当前函数的参数名及其值。</li>
+<li>info locals<br>  打印出当前函数中所有局部变量及其值。</li>
+<li>info catch<br>  打印出当前的函数中的异常处理信息。</li>
+</ul>
+<h3 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">(gdb) backtrace</span><br><span class="line">No stack.</span><br><span class="line">(gdb) r</span><br><span class="line">Starting program: /home/ubuntu/learn_gdb/tst </span><br><span class="line">result[1-100] = 5050 </span><br><span class="line">result[1-250] = 31125 </span><br><span class="line">[Inferior 1 (process 3011899) exited normally]</span><br><span class="line">(gdb) backtrace</span><br><span class="line">No stack.</span><br><span class="line">(gdb) break func</span><br><span class="line">Breakpoint 1 at 0x555555555149: file tst.c, line 4.</span><br><span class="line">(gdb) r</span><br><span class="line">Starting program: /home/ubuntu/learn_gdb/tst </span><br><span class="line"></span><br><span class="line">Breakpoint 1, func (n=0) at tst.c:4</span><br><span class="line">4       &#123;</span><br><span class="line">(gdb) bt</span><br><span class="line">#0  func (n=0) at tst.c:4</span><br><span class="line">#1  0x0000555555555221 in main (argc=1, argv=0x7fffffffe148) at tst.c:31</span><br><span class="line">(gdb) bt 1</span><br><span class="line">#0  func (n=0) at tst.c:4</span><br><span class="line">(More stack frames follow...)</span><br><span class="line">(gdb) bt -1</span><br><span class="line">#1  0x0000555555555221 in main (argc=1, argv=0x7fffffffe148) at tst.c:31</span><br><span class="line">(gdb) bt 2</span><br><span class="line">#0  func (n=0) at tst.c:4</span><br><span class="line">#1  0x0000555555555221 in main (argc=1, argv=0x7fffffffe148) at tst.c:31</span><br><span class="line">(gdb) bt -2</span><br><span class="line">#0  func (n=0) at tst.c:4</span><br><span class="line">#1  0x0000555555555221 in main (argc=1, argv=0x7fffffffe148) at tst.c:31</span><br><span class="line">(gdb) frame 1</span><br><span class="line">#1  0x0000555555555221 in main (argc=1, argv=0x7fffffffe148) at tst.c:31</span><br><span class="line">31          sum = func(10);</span><br><span class="line">(gdb) up 1</span><br><span class="line">#1  0x0000555555555221 in main (argc=1, argv=0x7fffffffe148) at tst.c:31</span><br><span class="line">31          sum = func(10);</span><br><span class="line">(gdb) down 1</span><br><span class="line">#0  func (n=0) at tst.c:4</span><br><span class="line">4       &#123;</span><br><span class="line">(gdb) frame</span><br><span class="line">#0  func (n=0) at tst.c:4</span><br><span class="line">4       &#123;</span><br><span class="line">(gdb) up 1</span><br><span class="line">#1  0x0000555555555221 in main (argc=1, argv=0x7fffffffe148) at tst.c:31</span><br><span class="line">31          sum = func(10);</span><br><span class="line">(gdb) frame</span><br><span class="line">#1  0x0000555555555221 in main (argc=1, argv=0x7fffffffe148) at tst.c:31</span><br><span class="line">31          sum = func(10);</span><br><span class="line">(gdb) info frame</span><br><span class="line">Stack level 1, frame at 0x7fffffffe060:</span><br><span class="line"> rip = 0x555555555221 in main (tst.c:31); saved rip = 0x7ffff7df30b3</span><br><span class="line"> caller of frame at 0x7fffffffe020</span><br><span class="line"> source language c.</span><br><span class="line"> Arglist at 0x7fffffffe018, args: argc=1, argv=0x7fffffffe148</span><br><span class="line"> Locals at 0x7fffffffe018, Previous frame&#x27;s sp is 0x7fffffffe060</span><br><span class="line"> Saved registers:</span><br><span class="line">  rbp at 0x7fffffffe050, rip at 0x7fffffffe058</span><br><span class="line">(gdb) down 1</span><br><span class="line">#0  func (n=0) at tst.c:4</span><br><span class="line">4       &#123;</span><br><span class="line">(gdb) info frame</span><br><span class="line">Stack level 0, frame at 0x7fffffffe020:</span><br><span class="line"> rip = 0x555555555149 in func (tst.c:4); saved rip = 0x555555555221</span><br><span class="line"> called by frame at 0x7fffffffe060</span><br><span class="line"> source language c.</span><br><span class="line"> Arglist at 0x7fffffffe010, args: n=0</span><br><span class="line"> Locals at 0x7fffffffe010, Previous frame&#x27;s sp is 0x7fffffffe020</span><br><span class="line"> Saved registers:</span><br><span class="line">  rip at 0x7fffffffe018</span><br><span class="line">(gdb) info locals</span><br><span class="line">sum = -8137</span><br><span class="line">i = 32767</span><br><span class="line">(gdb) info args</span><br><span class="line">n = 0</span><br><span class="line">(gdb) info catch</span><br><span class="line">Undefined info command: &quot;catch&quot;.  Try &quot;help info&quot;.</span><br></pre></td></tr></table></figure>
+<h2 id="查看源程序"><a href="#查看源程序" class="headerlink" title="查看源程序"></a>查看源程序</h2><h4 id="显示源代码"><a href="#显示源代码" class="headerlink" title="显示源代码"></a>显示源代码</h4><ul>
+<li>list <linenum><br>  显示程序第linenum行的周围的源程序。</linenum></li>
+<li>list <function><br>  显示函数名为function的函数的源程序。</function></li>
+<li>list<br>  显示当前行后面的源程序。</li>
+<li>list -<br>  显示当前行前面的源程序。</li>
+<li>set listsize <count><br>  设置一次显示源代码的行数。</count></li>
+<li>show listsize<br>  查看当前listsize的设置。</li>
+<li>list <first>, <last><br>  显示从first行到last行之间的源代码。</last></first></li>
+<li>list , <last><br>  显示从当前行到last行之间的源代码。</last></li>
+<li>list +<br>  往后显示源代码。</li>
+</ul>
+<h4 id="搜索源代码"><a href="#搜索源代码" class="headerlink" title="搜索源代码"></a>搜索源代码</h4><ul>
+<li>forward-search&#x2F;search <regexp><br>从当前行向后查找匹配某个字符串的程序行</regexp></li>
+<li>reverse-search <regexp><br>从当前行向后查找匹配某个字符串的程序行</regexp></li>
+</ul>
+<h4 id="指定源文件的路径"><a href="#指定源文件的路径" class="headerlink" title="指定源文件的路径"></a>指定源文件的路径</h4><p>某些时候，用-g编译过后的执行程序中只是包括了源文件的名字，没有路径名。GDB提供了可以让你指定源文件的路径的命令，以便GDB进行搜索。</p>
+<ul>
+<li>directory &lt;dirname … &gt;，dir &lt;dirname … &gt;<br>  加一个源文件路径到当前路径的前面。如果你要指定多个路径，UNIX下你可以使用“:”，Windows下你可以使用“;”。</li>
+<li>directory<br>  清除所有的自定义的源文件搜索路径信息。</li>
+<li>show directories<br>  显示定义了的源文件搜索路径。</li>
+</ul>
+<h4 id="源代码的内存"><a href="#源代码的内存" class="headerlink" title="源代码的内存"></a>源代码的内存</h4><ul>
+<li>info line可以查看源代码在内存中的地址</li>
+<li>disassemble指令可以查看源程序的当前执行时的机器码<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">(gdb) break func</span><br><span class="line">Breakpoint 1 at 0x1149: file tst.c, line 4.</span><br><span class="line">(gdb) info line tst.c:func</span><br><span class="line">Line 4 of &quot;tst.c&quot; starts at address 0x1149 &lt;func&gt; and ends at 0x1154 &lt;func+11&gt;.</span><br><span class="line">(gdb) r</span><br><span class="line">Starting program: /home/ubuntu/learn_gdb/tst </span><br><span class="line"></span><br><span class="line">Breakpoint 1, func (n=0) at tst.c:4</span><br><span class="line">4       &#123;</span><br><span class="line">(gdb) c</span><br><span class="line">Continuing.</span><br><span class="line">result[1-100] = 5050 </span><br><span class="line"></span><br><span class="line">Breakpoint 1, func (n=10) at tst.c:4</span><br><span class="line">4       &#123;</span><br><span class="line">(gdb) c</span><br><span class="line">Continuing.</span><br><span class="line">result[1-250] = 31125 </span><br><span class="line">[Inferior 1 (process 3016500) exited normally]</span><br><span class="line">(gdb) info line tst.c:func</span><br><span class="line">Line 4 of &quot;tst.c&quot; starts at address 0x555555555149 &lt;func&gt; and ends at 0x555555555154 &lt;func+11&gt;.</span><br><span class="line">(gdb) disassemble func</span><br><span class="line">Dump of assembler code for function func:</span><br><span class="line">   0x0000555555555149 &lt;+0&gt;:     endbr64 </span><br><span class="line">   0x000055555555514d &lt;+4&gt;:     push   %rbp</span><br><span class="line">   0x000055555555514e &lt;+5&gt;:     mov    %rsp,%rbp</span><br><span class="line">   0x0000555555555151 &lt;+8&gt;:     mov    %edi,-0x14(%rbp)</span><br><span class="line">   0x0000555555555154 &lt;+11&gt;:    movl   $0x0,-0x8(%rbp)</span><br><span class="line">   0x000055555555515b &lt;+18&gt;:    movl   $0x0,-0x4(%rbp)</span><br><span class="line">   0x0000555555555162 &lt;+25&gt;:    jmp    0x55555555516e &lt;func+37&gt;</span><br><span class="line">   0x0000555555555164 &lt;+27&gt;:    mov    -0x4(%rbp),%eax</span><br><span class="line">   0x0000555555555167 &lt;+30&gt;:    add    %eax,-0x8(%rbp)</span><br><span class="line">   0x000055555555516a &lt;+33&gt;:    addl   $0x1,-0x4(%rbp)</span><br><span class="line">   0x000055555555516e &lt;+37&gt;:    mov    -0x4(%rbp),%eax</span><br><span class="line">--Type &lt;RET&gt; for more, q to quit, c to continue without paging--c</span><br><span class="line">   0x0000555555555171 &lt;+40&gt;:    cmp    -0x14(%rbp),%eax</span><br><span class="line">   0x0000555555555174 &lt;+43&gt;:    jl     0x555555555164 &lt;func+27&gt;</span><br><span class="line">   0x0000555555555176 &lt;+45&gt;:    mov    -0x8(%rbp),%eax</span><br><span class="line">   0x0000555555555179 &lt;+48&gt;:    pop    %rbp</span><br><span class="line">   0x000055555555517a &lt;+49&gt;:    retq   </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：gdb入门系列3</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2021-11-24 14:58:48</li>
+        <li>
+            本文链接：http://mufiye.github.io/2021/11/24/gdb入门系列3/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/gdb/">#gdb</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/11/26/gdb%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%974/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">gdb入门系列4</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/11/22/gdb%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%972/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">gdb入门系列2</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GDB%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%973"><span class="nav-text">GDB入门系列3</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%A0%88%E4%BF%A1%E6%81%AF"><span class="nav-text">查看栈信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%A6%81"><span class="nav-text">概要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C"><span class="nav-text">实验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%BA%90%E7%A8%8B%E5%BA%8F"><span class="nav-text">查看源程序</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%98%BE%E7%A4%BA%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="nav-text">显示源代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%90%9C%E7%B4%A2%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="nav-text">搜索源代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E6%BA%90%E6%96%87%E4%BB%B6%E7%9A%84%E8%B7%AF%E5%BE%84"><span class="nav-text">指定源文件的路径</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BA%90%E4%BB%A3%E7%A0%81%E7%9A%84%E5%86%85%E5%AD%98"><span class="nav-text">源代码的内存</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

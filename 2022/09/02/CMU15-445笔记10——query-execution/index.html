@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            CMU15-445笔记10——query execution |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">CMU15-445笔记10——query execution</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-09-02 15:56:00</span>
+        <span class="mobile">2022-09-02 15:56</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/CMU-15-445/">CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%AD%98%E5%82%A8/">存储</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>621 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>2 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="Processing-Model"><a href="#Processing-Model" class="headerlink" title="Processing Model"></a>Processing Model</h1><p>明确了如何执行一个查询计划。查询是从上往下还是从下往上，在每个operator之间，我们实际该传多少东西。</p>
+<h2 id="Approach-1-Iterator-Model"><a href="#Approach-1-Iterator-Model" class="headerlink" title="Approach #1: Iterator Model"></a>Approach #1: Iterator Model</h2><p>也称为Volcano model或者Pipeline model。</p>
+<h2 id="Approach-2-Materialization-Model"><a href="#Approach-2-Materialization-Model" class="headerlink" title="Approach #2: Materialization Model"></a>Approach #2: Materialization Model</h2><p>Iterator model只返回一个tuple，但materialization model则返回全部。</p>
+<ul>
+<li>适合于OLTP workloads，因为这类查询一次只会返回很小数量的tuples，这样开销很小（因为数据被读取在内存中时要考虑同步问题）。</li>
+<li>不适合于OLAP workloads，因为这会导致中间结果返回过多的tuples。</li>
+</ul>
+<h2 id="Approach-3-Vectorized-x2F-Batch-Model"><a href="#Approach-3-Vectorized-x2F-Batch-Model" class="headerlink" title="Approach #3: Vectorized &#x2F; Batch Model"></a>Approach #3: Vectorized &#x2F; Batch Model</h2><p>当每次调用next函数时，传递的是一批次tuple而不是单个tuple，这样更为高效（因此其是对于iterator model的增强），同时避免了传递的数据过多的问题。</p>
+<h2 id="Plan-Processing-Direction"><a href="#Plan-Processing-Direction" class="headerlink" title="Plan Processing Direction"></a>Plan Processing Direction</h2><h3 id="Approach-1-top-to-bottom"><a href="#Approach-1-top-to-bottom" class="headerlink" title="Approach #1: top-to-bottom"></a>Approach #1: top-to-bottom</h3><p>从根节点递归地调用函数。</p>
+<h3 id="Approach-2-bottom-to-top"><a href="#Approach-2-bottom-to-top" class="headerlink" title="Approach #2: bottom-to-top"></a>Approach #2: bottom-to-top</h3><p>从叶节点推数据到根节点中。</p>
+<h1 id="Access-Methods"><a href="#Access-Methods" class="headerlink" title="Access Methods"></a>Access Methods</h1><p>如何在数据库系统的表中查找数据。</p>
+<h2 id="Approach-1-Sequential-Scan"><a href="#Approach-1-Sequential-Scan" class="headerlink" title="Approach #1: Sequential Scan"></a>Approach #1: Sequential Scan</h2><p>从buffer pool中读取每一个数据，之后遍历每一个tuple判断其是否需要读取。DBMS维护一个内部的游标来追踪最后一个被检查的page与slot。</p>
+<h3 id="Optimization-of-Sequential-Scan"><a href="#Optimization-of-Sequential-Scan" class="headerlink" title="Optimization of Sequential Scan"></a>Optimization of Sequential Scan</h3><ul>
+<li><p>Prefetching</p>
+</li>
+<li><p>Buffer pool bypass</p>
+</li>
+<li><p>Parallelization</p>
+</li>
+<li><p><strong>Zone maps</strong>：预先计算一个page的一些属性并存储起来，之后读取可以不需要读取整个page而先读取page的这些属性值进行判断是否需要读取。（总是在OLAP中使用，而不是在OLTP中使用，因为这样维护成本过高。）</p>
+</li>
+<li><p><strong>Late materialization</strong>：延迟将数据从一个operator传播到下一个operator（延迟读操作），之后根据情况去读取具体的数据。</p>
+</li>
+<li><p><strong>heap clustering</strong>：利用聚簇索引，之前有介绍过。</p>
+</li>
+</ul>
+<h2 id="Approach-2-Index-Scan"><a href="#Approach-2-Index-Scan" class="headerlink" title="Approach #2: Index Scan"></a>Approach #2: Index Scan</h2><p>数据库管理系统选择合适的索引去查找tuples（可能有多个索引可用）。</p>
+<h2 id="Approach-3-Multi-Index-x2F-“Bitmap”-Scan"><a href="#Approach-3-Multi-Index-x2F-“Bitmap”-Scan" class="headerlink" title="Approach #3: Multi-Index &#x2F; “Bitmap” Scan"></a>Approach #3: Multi-Index &#x2F; “Bitmap” Scan</h2><p>通过不同的索引进行多次查找，并合并结果。</p>
+<h2 id="Index-Scan-Page-Sorting"><a href="#Index-Scan-Page-Sorting" class="headerlink" title="Index Scan Page Sorting"></a>Index Scan Page Sorting</h2><p>对于非聚簇索引中的tuple，可能在索引上连续排列的tuple在物理位置上十分分散，因此数据库管理系统可以首先取到所有的tuples的page id并对它们进行排序，之后再进行读取。</p>
+<h1 id="Expression-Evaluation"><a href="#Expression-Evaluation" class="headerlink" title="Expression Evaluation"></a>Expression Evaluation</h1><p>DBMS将where子句表示为一个表达式树。</p>
+<p>利用JIT（即时编译）来处理类似1&#x3D;&#x3D;1这种查询语句，这种语句总是编译为true这样的常量。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：CMU15-445笔记10——query execution</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2022-09-02 15:56:00</li>
+        <li>
+            本文链接：http://mufiye.github.io/2022/09/02/CMU15-445笔记10——query-execution/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/CMU-15-445/">#CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%AD%98%E5%82%A8/">#存储</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2023/01/26/skywalking-agent-tracer-api%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">skywalking-agent-tracer-api设计文档</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/08/29/CMU15-445%E7%AC%94%E8%AE%B09%E2%80%94%E2%80%94Join-Algorithms/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CMU15-445笔记9——Join Algorithms</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Processing-Model"><span class="nav-text">Processing Model</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach-1-Iterator-Model"><span class="nav-text">Approach #1: Iterator Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach-2-Materialization-Model"><span class="nav-text">Approach #2: Materialization Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach-3-Vectorized-x2F-Batch-Model"><span class="nav-text">Approach #3: Vectorized &#x2F; Batch Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Plan-Processing-Direction"><span class="nav-text">Plan Processing Direction</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Approach-1-top-to-bottom"><span class="nav-text">Approach #1: top-to-bottom</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Approach-2-bottom-to-top"><span class="nav-text">Approach #2: bottom-to-top</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Access-Methods"><span class="nav-text">Access Methods</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach-1-Sequential-Scan"><span class="nav-text">Approach #1: Sequential Scan</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimization-of-Sequential-Scan"><span class="nav-text">Optimization of Sequential Scan</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach-2-Index-Scan"><span class="nav-text">Approach #2: Index Scan</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach-3-Multi-Index-x2F-%E2%80%9CBitmap%E2%80%9D-Scan"><span class="nav-text">Approach #3: Multi-Index &#x2F; “Bitmap” Scan</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Index-Scan-Page-Sorting"><span class="nav-text">Index Scan Page Sorting</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Expression-Evaluation"><span class="nav-text">Expression Evaluation</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

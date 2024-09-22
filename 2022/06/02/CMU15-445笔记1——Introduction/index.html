@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="mufiye">
+    
+    <title>
+        
+            CMU15-445笔记1——Introduction |
+        
+        mufiye&#39;s blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.png">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/happy.jpg","favicon":"/images/logo.png","article_img_align":"center","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                mufiye&#39;s blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">CMU15-445笔记1——Introduction</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/happy.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">mufiye</span>
+                        
+                            <span class="author-label">内核新手</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-06-02 13:15:15</span>
+        <span class="mobile">2022-06-02 13:15</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/CMU-15-445/">CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%AD%98%E5%82%A8/">存储</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.1k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>3 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="1-为什么需要数据库"><a href="#1-为什么需要数据库" class="headerlink" title="1. 为什么需要数据库"></a>1. 为什么需要数据库</h1><p>如果使用csv file而不使用数据库</p>
+<h2 id="1-1-数据一致性"><a href="#1-1-数据一致性" class="headerlink" title="1.1 数据一致性"></a>1.1 数据一致性</h2><ol>
+<li>多个csv文件中相关联的多条数据之间不冲突</li>
+<li>对于csv文件中字段进行非法的字符修改</li>
+<li>我们如何能够存储多个内容到一个字段（比如书的作者可能有多个，我们要存储所有这些作者名字到书的作者这一栏，但这会难以解析）</li>
+</ol>
+<h2 id="1-2-实现"><a href="#1-2-实现" class="headerlink" title="1.2 实现"></a>1.2 实现</h2><ol>
+<li>如何在cvs file中找到一条特定的记录</li>
+<li>使用csv file对于不同应用需要不同的程序来读取数据</li>
+<li>多线程读写问题</li>
+</ol>
+<h2 id="1-3-持久性"><a href="#1-3-持久性" class="headerlink" title="1.3 持久性"></a>1.3 持久性</h2><ol>
+<li>存储csv file的机器在读写文件时宕机</li>
+<li>复制该csv file在多台机器上保证高可用性</li>
+</ol>
+<h1 id="2-DBMS"><a href="#2-DBMS" class="headerlink" title="2. DBMS"></a>2. DBMS</h1><p>分析了使用csv file来存储数据，可以看出我们迫切需要数据库和DBMS。DBMS(Database Management System)是允许应用程序在数据库中存储和分析信息的软件，而广义的DBMS被设计来定义、创建、查询、更新和管理数据库，这也是该课程的项目所要做的东西。</p>
+<h2 id="2-1-Data-model"><a href="#2-1-Data-model" class="headerlink" title="2.1 Data model"></a>2.1 Data model</h2><p>data model是指如何组织数据的高层次概念。</p>
+<ul>
+<li>SQL - Relational</li>
+<li>NoSQL<ul>
+<li>Key&#x2F;Value</li>
+<li>Graph</li>
+<li>Document</li>
+<li>Column-family</li>
+</ul>
+</li>
+<li>Other<ul>
+<li>Array&#x2F;Matrix（在机器学习中使用）</li>
+<li>Hierarchical（过时的）</li>
+<li>Network（过时的）</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-2-Scheme"><a href="#2-2-Scheme" class="headerlink" title="2.2 Scheme"></a>2.2 Scheme</h2><p>Scheme是关于存储数据时所使用的定义，其是指使用给定数据模型对特定数据集合的描述。</p>
+<h2 id="2-3-Data-Manipulation-Languages"><a href="#2-3-Data-Manipulation-Languages" class="headerlink" title="2.3 Data Manipulation Languages"></a>2.3 Data Manipulation Languages</h2><ul>
+<li><p>Procedural：这种请求指定了高层次的策略告诉DBMS应当如何去找到想要的结果。（关系代数）（关系型数据库需要关注的）</p>
+</li>
+<li><p>Non-Procedural：这个请求只告诉DBMS想要什么数据而不是如何去找到它们。（关系演算）</p>
+</li>
+</ul>
+<h2 id="2-4-查询以及查询优化"><a href="#2-4-查询以及查询优化" class="headerlink" title="2.4 查询以及查询优化"></a>2.4 查询以及查询优化</h2><p>数据模型应当独立于查询语句。</p>
+<h1 id="3-关系数据模型"><a href="#3-关系数据模型" class="headerlink" title="3. 关系数据模型"></a>3. 关系数据模型</h1><p><strong>论文</strong>：《A Relational Model of Data for Large Shared Data Banks》</p>
+<h2 id="3-1-关系数据模型三要素："><a href="#3-1-关系数据模型三要素：" class="headerlink" title="3.1 关系数据模型三要素："></a>3.1 关系数据模型三要素：</h2><ol>
+<li>将关系转化为简单的数据结构然后存入数据库</li>
+<li>使用高级语言来获取数据、应用数据</li>
+<li>大型数据库的物理存储策略取决于数据库管理系统的实现</li>
+</ol>
+<h2 id="3-2-关系数据模型的三个组成部分："><a href="#3-2-关系数据模型的三个组成部分：" class="headerlink" title="3.2 关系数据模型的三个组成部分："></a>3.2 关系数据模型的三个组成部分：</h2><ul>
+<li>Structure：我们在我们的关系中该定义什么，它们的内容是什么，类型是什么。</li>
+<li>Integrity：关于数据的约束。</li>
+<li>Manipulation：操作数据库中内容的方式。</li>
+</ul>
+<h2 id="3-3-关系的组成："><a href="#3-3-关系的组成：" class="headerlink" title="3.3 关系的组成："></a>3.3 关系的组成：</h2><ul>
+<li>tuple：一个tuple表示关系数据模型中的一条记录，其对应了一组属性值。</li>
+<li>primary key：主键某一个能够唯一标识一条记录的属性。</li>
+<li>foreign key：外键用于指定一张表中的属性必须存在于另一张表中，它用来维护不同表之间的数据一致性。</li>
+</ul>
+<h2 id="3-4-最初的关系代数运算符："><a href="#3-4-最初的关系代数运算符：" class="headerlink" title="3.4 最初的关系代数运算符："></a>3.4 最初的关系代数运算符：</h2><ul>
+<li>Select：选择满足条件的子集</li>
+<li>Projection：生成一个新的输出关系，它里面只包含一个来自我们给定输入关系中的指定属性</li>
+<li>Union：将两个关系组合生成一个新的关系，这其中包含了这两个关系中的全部tuple</li>
+<li>Intersection：生成一个包含了在两个关系中都出现过的tuple的输出关系</li>
+<li>Difference：只取在一个关系中出现的元素，而不取另一个关系中的元素</li>
+<li>Product：笛卡尔积，生成两个输入关系中所有tuple的可能组合</li>
+<li>Join：自然连接，对于一个关系中的每一个tuple，观察它与另一个关系是否具有相同名称，相同类型的所有属性匹配，如果有，那么这就是这两个关系共同拥有的元素，那么就可以进行连接操作（将对应的tuple连接起来，去除掉一份相同的部分）。要注意的是，该操作符和difference很像但是有区别，difference取的两个tuple必须关系属性以及关系属性的内容完全相同但是Join可以有不相同的关系属性（相同的关系属性其内容必须相同）。</li>
+</ul>
+<h2 id="3-5-额外的关系代数运算符："><a href="#3-5-额外的关系代数运算符：" class="headerlink" title="3.5 额外的关系代数运算符："></a>3.5 额外的关系代数运算符：</h2><ul>
+<li>Rename</li>
+<li>Assignment</li>
+<li>Duplicate Elimination</li>
+<li>Aggregation</li>
+<li>Sorting</li>
+<li>Division</li>
+</ul>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>本文标题：CMU15-445笔记1——Introduction</li>
+        <li>本文作者：mufiye</li>
+        <li>创建时间：2022-06-02 13:15:15</li>
+        <li>
+            本文链接：http://mufiye.github.io/2022/06/02/CMU15-445笔记1——Introduction/
+        </li>
+        <li>
+            版权声明：本博客所有文章除特别声明外，均采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> 许可协议。转载请注明出处！
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/CMU-15-445/">#CMU 15-445</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%AD%98%E5%82%A8/">#存储</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/06/02/CMU15-445%E7%AC%94%E8%AE%B02%E2%80%94%E2%80%94Advanced-SQL/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CMU15-445笔记2——Advanced SQL</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/05/31/nfs%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">nfs环境搭建</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;评论</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '51136a001a6f1e0b7f45',
+                    clientSecret: '723f7c05d0a3b94c21246d7494fb74962fbd6248',
+                    repo: 'mufiye_blog-gitalk-comments-repo',
+                    owner: 'mufiye',
+                    admin: ['mufiye'],
+                    id: __gitalk__pathname,
+                    language: 'zh-CN'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">mufiye</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">1. 为什么需要数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-text">1.1 数据一致性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E5%AE%9E%E7%8E%B0"><span class="nav-text">1.2 实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E6%8C%81%E4%B9%85%E6%80%A7"><span class="nav-text">1.3 持久性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-DBMS"><span class="nav-text">2. DBMS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Data-model"><span class="nav-text">2.1 Data model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Scheme"><span class="nav-text">2.2 Scheme</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Data-Manipulation-Languages"><span class="nav-text">2.3 Data Manipulation Languages</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E6%9F%A5%E8%AF%A2%E4%BB%A5%E5%8F%8A%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="nav-text">2.4 查询以及查询优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B"><span class="nav-text">3. 关系数据模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E4%B8%89%E8%A6%81%E7%B4%A0%EF%BC%9A"><span class="nav-text">3.1 关系数据模型三要素：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%89%E4%B8%AA%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86%EF%BC%9A"><span class="nav-text">3.2 关系数据模型的三个组成部分：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E5%85%B3%E7%B3%BB%E7%9A%84%E7%BB%84%E6%88%90%EF%BC%9A"><span class="nav-text">3.3 关系的组成：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E6%9C%80%E5%88%9D%E7%9A%84%E5%85%B3%E7%B3%BB%E4%BB%A3%E6%95%B0%E8%BF%90%E7%AE%97%E7%AC%A6%EF%BC%9A"><span class="nav-text">3.4 最初的关系代数运算符：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-%E9%A2%9D%E5%A4%96%E7%9A%84%E5%85%B3%E7%B3%BB%E4%BB%A3%E6%95%B0%E8%BF%90%E7%AE%97%E7%AC%A6%EF%BC%9A"><span class="nav-text">3.5 额外的关系代数运算符：</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>
